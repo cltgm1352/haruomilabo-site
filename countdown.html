@@ -6,7 +6,7 @@
 
 <title>HARUOMILABO カウントダウン</title>
 
-<!-- 数字用（Orbitron） + 漢字・日本語用（Noto Sans JP） -->
+<!-- 数字用（Orbitron） + 日本語フォント（Noto Sans JP） -->
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
 
 <!-- ファビコン -->
@@ -18,15 +18,12 @@
     padding: 0;
     background: url("okumono_hatef8.png") no-repeat center center fixed;
     background-size: cover;
-
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
-
     color: #000000;
     text-align: center;
-
     font-family: 'Noto Sans JP', sans-serif;
   }
 
@@ -35,14 +32,14 @@
     font-weight: 700;
   }
 
-  /* 数字だけOrbitronを適用 */
-  #countdown span.num {
+  /* 数字だけOrbitron */
+  #countdown .num {
     font-family: 'Orbitron', sans-serif;
   }
 
   @media (max-width: 600px) {
     #countdown {
-      font-size: 32px;
+      font-size: 34px;
     }
   }
 </style>
@@ -53,17 +50,25 @@
 <div id="countdown"></div>
 
 <script>
-const targetDate = new Date("2026-04-01T00:00:00+09:00").getTime();
+// 日本時間（JST）を強制する関数
+function getJSTDate() {
+  const now = new Date();
+  // now のUTCミリ秒 + JSTの時差(9時間)
+  return new Date(now.getTime() + (9 * 60 * 60 * 1000));
+}
+
+// JSTで 2026-04-01 00:00
+const targetJST = new Date("2026-04-01T00:00:00+09:00").getTime();
 const redirectURL = "https://haruomilabo.net/haruomilabo2ndanniversary/haruomilabo-2nd-anniversary.html";
 
 // 過ぎていたら即リダイレクト
-if (Date.now() >= targetDate) {
+if (Date.now() >= targetJST) {
   window.location.href = redirectURL;
 }
 
-const timer = setInterval(function() {
-  const now = Date.now();
-  const distance = targetDate - now;
+const timer = setInterval(function () {
+  const nowJST = getJSTDate().getTime();
+  const distance = targetJST - nowJST;
 
   if (distance <= 0) {
     clearInterval(timer);

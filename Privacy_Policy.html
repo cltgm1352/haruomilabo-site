@@ -1,41 +1,35 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
-    <!-- サイト名 -->
-    <title>HARUOMILABO プライバシーポリシー</title>
-    
-    <!-- サイト説明 -->
-    <meta name="description" content="HARUOMILABOのプライバシーポリシーです">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HARUOMILABO プライバシーポリシー</title>
+<meta name="description" content="HARUOMILABOのプライバシーポリシーです">
+<link rel="icon" href="haruomilabologo.png" type="image/png">
+<style>
+    html, body {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        width: 100%;
+        overflow: hidden;
+    }
 
-    <!-- ファビコン -->
-    <link rel="icon" href="haruomilabologo.png" type="image/png">
+    .pdf-container {
+        width: 100%;
+        height: 100%;
+        border: none;
+    }
 
-    <style>
-        html, body {
-            margin: 0;
-            padding: 0;
-            height: 100%;
-            width: 100%;
-            overflow: hidden;
+    /* スマホで横スクロール可能にする */
+    @media (max-width: 768px) {
+        .pdf-container {
+            overflow: auto;
         }
-
-        iframe {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            border: none;
-        }
-    </style>
+    }
+</style>
 </head>
 <body>
-    <iframe src="HARUOMILABO_plaibs.pdf">
-        このブラウザではPDFを表示できません。 
-        <a href="HARUOMILABO_plaibs.pdf">PDFをダウンロード</a>
-    </iframe>
+<embed class="pdf-container" src="HARUOMILABO_plaibs.pdf" type="application/pdf">
 </body>
 </html>

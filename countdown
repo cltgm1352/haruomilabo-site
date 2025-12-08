@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>HARUOMILABO カウントダウン</title>
+
+<!-- かっこいいフォント（Orbitron） -->
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+
+<!-- ファビコン -->
+<link rel="icon" href="icon_1.png" type="image/png">
+
+<style>
+  body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Orbitron', sans-serif;
+    background: url("okumono_hatef8.png") no-repeat center center fixed;
+    background-size: cover;
+    text-align: center;
+    color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 100vh;
+  }
+
+  h1 {
+    font-size: 36px;
+    margin-bottom: 40px;
+    text-shadow: 2px 2px 6px rgba(0,0,0,0.6);
+  }
+
+  #countdown {
+    font-size: 50px;
+    text-shadow: 2px 2px 8px rgba(0,0,0,0.7);
+  }
+
+  @media (max-width: 600px) {
+    h1 {
+      font-size: 28px;
+    }
+    #countdown {
+      font-size: 32px;
+    }
+  }
+</style>
+
+</head>
+<body>
+
+<h1>HARUOMILABO カウントダウン</h1>
+<div id="countdown"></div>
+
+<script>
+// 目標日（JST）
+const targetDate = new Date("2026-04-01T00:00:00+09:00").getTime();
+const redirectURL = "https://haruomilabo.net/haruomilabo2ndanniversary/haruomilabo-2nd-anniversary.html";
+
+// --- 再読み込みしてもリダイレクトするように ---
+// 現在が目標日を過ぎていたら即リダイレクト
+if (Date.now() >= targetDate) {
+  window.location.href = redirectURL;
+}
+
+const timer = setInterval(function() {
+  const now = Date.now();
+  const distance = targetDate - now;
+
+  if (distance <= 0) {
+    clearInterval(timer);
+    document.getElementById("countdown").innerHTML = "リダイレクト中…";
+    window.location.href = redirectURL;
+    return;
+  }
+
+  const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+  const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+  const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+  const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+  document.getElementById("countdown").innerHTML =
+    `${days}日 ${hours}時間 ${minutes}分 ${seconds}秒`;
+}, 1000);
+</script>
+
+</body>
+</html>

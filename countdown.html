@@ -32,7 +32,6 @@
     font-weight: 700;
   }
 
-  /* 数字だけOrbitron */
   #countdown .num {
     font-family: 'Orbitron', sans-serif;
   }
@@ -50,25 +49,18 @@
 <div id="countdown"></div>
 
 <script>
-// 日本時間（JST）を強制する関数
-function getJSTDate() {
-  const now = new Date();
-  // now のUTCミリ秒 + JSTの時差(9時間)
-  return new Date(now.getTime() + (9 * 60 * 60 * 1000));
-}
-
-// JSTで 2026-04-01 00:00
-const targetJST = new Date("2026-04-01T00:00:00+09:00").getTime();
+// 目標日時（日本時間）
+const targetDate = new Date("2026-04-01T00:00:00+09:00").getTime();
 const redirectURL = "https://haruomilabo.net/haruomilabo2ndanniversary/haruomilabo-2nd-anniversary.html";
 
-// 過ぎていたら即リダイレクト
-if (Date.now() >= targetJST) {
+// すでに期限を過ぎていたらリダイレクト
+if (Date.now() >= targetDate) {
   window.location.href = redirectURL;
 }
 
 const timer = setInterval(function () {
-  const nowJST = getJSTDate().getTime();
-  const distance = targetJST - nowJST;
+  const now = Date.now();
+  const distance = targetDate - now;
 
   if (distance <= 0) {
     clearInterval(timer);

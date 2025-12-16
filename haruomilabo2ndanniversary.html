@@ -21,7 +21,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: #000;
+            background-color: #000; /* ローディング画面の背景は常に黒 */
             z-index: 1000;
             transition: opacity 1s ease-out;
         }
@@ -32,7 +32,8 @@
             left: 0;
             width: 100%;
             height: 100%;
-            object-fit: cover;
+            object-fit: contain; /* スマホでも動画全体が収まるように（アスペクト比を保持して画面にフィット） */
+            background-color: #000; /* 動画の周囲も黒で埋める */
         }
         
         #loading .fallback {
@@ -40,8 +41,8 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            max-width: 80%;
-            max-height: 80%;
+            max-width: 90%;
+            max-height: 90%;
             display: none;
         }
         
@@ -51,12 +52,32 @@
             background-color: #fff;
             color: #000;
             text-align: center;
-            padding: 50px;
+            padding: 20px;
             box-sizing: border-box;
+            overflow-y: auto; /* スマホでコンテンツが多い場合にスクロール可能 */
+        }
+        
+        #main-content h1 {
+            font-size: 2em;
+            margin-top: 50px;
+        }
+        
+        #main-content p {
+            font-size: 1.2em;
         }
         
         .fade-out {
             opacity: 0;
+        }
+        
+        /* スマホ対応の追加調整 */
+        @media (max-width: 768px) {
+            #main-content h1 {
+                font-size: 1.8em;
+            }
+            #main-content p {
+                font-size: 1em;
+            }
         }
     </style>
 </head>
@@ -65,6 +86,7 @@
         <video id="loading-video" autoplay muted playsinline preload="auto">
             <source src="loadingvideo.mp4" type="video/mp4">
         </video>
+        <!-- 動画が読み込めないときのフォールバック画像（中央表示） -->
         <img src="2ndANNIVERSARY-2.png" alt="HARUOMILABO 2nd ANNIVERSARY" class="fallback">
     </div>
     
@@ -85,22 +107,25 @@
         function startFadeOut() {
             if (fadeTimer !== null) return; // 二重実行防止
             
-            fadeTimer = setTimeout(() => {
-                loadingDiv.classList.add('fade-out');
-                setTimeout(() => {
-                    loadingDiv.style.display = 'none';
-                    mainContent.style.display = 'block';
-                }, 1000);
-            }, 0);
+            loadingDiv.classList.add('fade-out');
+            setTimeout(() => {
+                loadingDiv.style.display = 'none';
+                mainContent.style.display = 'block';
+            }, 1000);
         }
         
-        // 動画が実際に再生開始されたらフォールバックを隠して7秒タイマー開始
+        // 動画が実際に再生開始されたらフォールバックを隠す
         video.addEventListener('playing', () => {
             fallback.style.display = 'none';
             
-            const videoTime = (video.duration || 0) * 1000;
-            const delay = Math.max(7000 - videoTime, 0);
-            setTimeout(startFadeOut, videoTime + delay);
+            // 動画の長さが取得できれば7秒に調整、できなければそのまま7秒待機
+            if (video.duration) {
+                const videoTime = video.duration * 1000;
+                const delay = Math.max(7000 - videoTime, 0);
+                setTimeout(startFadeOut, videoTime + delay);
+            } else {
+                setTimeout(startFadeOut, 7000);
+            }
         });
         
         // 動画読み込みエラー時 → フォールバック画像を表示
@@ -108,7 +133,7 @@
             fallback.style.display = 'block';
         });
         
-        // どんな場合でも7秒後には強制的にメイン画面へ遷移（これで止まらなくなる）
+        // どんな場合でも7秒後には強制的にメイン画面へ遷移（スマホでも確実に進む）
         setTimeout(startFadeOut, 7000);
     </script>
 </body>

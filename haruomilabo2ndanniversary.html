@@ -30,9 +30,12 @@
             align-items: center;
         }
         
+        /* ローディング動画：フルスクリーンで全体が見えるように戻す */
         #loading video {
-            width: 100%;
-            height: 100%;
+            max-width: 100%;
+            max-height: 100%;
+            width: auto;
+            height: auto;
             object-fit: contain;
             background-color: #000;
         }
@@ -43,45 +46,31 @@
             display: none;
         }
         
-        @media (max-width: 768px) {
-            #loading video {
-                max-width: 80%;
-                max-height: 80%;
-                width: auto;
-                height: auto;
-            }
-            #loading .fallback {
-                max-width: 80%;
-                max-height: 80%;
-            }
-        }
-        
         #main-content {
             display: none;
             width: 100%;
             min-height: 100%;
-            background-color: #fff;
+            background-color: #fff; /* 背景は白のまま */
             color: #000;
             text-align: center;
-            padding: 20px;
+            padding: 40px 20px;
             box-sizing: border-box;
-            overflow: hidden; /* 横スクロール防止 */
+            overflow: hidden;
         }
         
-        /* メインコンテンツのラッパー（スマホで縮小用） */
         #main-inner {
             width: 100%;
-            max-width: 100%;
+            max-width: 1000px; /* PCでは最大幅制限 */
             margin: 0 auto;
         }
         
         #main-content h1 {
-            font-size: 2.5em;
-            margin: 60px 0 30px 0;
+            font-size: 2.8em;
+            margin: 0 0 30px 0;
         }
         
         #main-content p {
-            font-size: 1.4em;
+            font-size: 1.5em;
             max-width: 90%;
             margin: 0 auto 40px;
         }
@@ -90,46 +79,44 @@
             opacity: 0;
         }
         
-        /* スマホ対応：メイン画面全体を少し縮小して全体表示 */
+        /* スマホ対応：コンテンツ全体を少し縮小して画面内に収める */
         @media (max-width: 768px) {
             #main-content {
-                padding: 10px;
-                transform: scale(0.85);        /* 全体を85%に縮小 */
-                transform-origin: top center;  /* 上部中央を基準に縮小 */
-                height: auto;
-                min-height: 100vh;
+                padding: 20px 15px;
             }
             
             #main-inner {
-                transform: scale(1.176);       /* scale(0.85)の逆数で子要素を元サイズに戻す */
+                transform: scale(0.9);         /* 全体を90%に縮小 */
+                transform-origin: top center;
             }
             
             #main-content h1 {
-                font-size: 2.2em;
-                margin-top: 50px;
+                font-size: 2.4em;
+                margin-bottom: 25px;
+            }
+            
+            #main-content p {
+                font-size: 1.3em;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            #main-inner {
+                transform: scale(0.8);         /* より小さい画面では80% */
+            }
+            
+            #main-content h1 {
+                font-size: 2.1em;
             }
             
             #main-content p {
                 font-size: 1.2em;
             }
         }
-        
-        @media (max-width: 480px) {
-            #main-content {
-                transform: scale(0.78);        /* より小さい画面ではさらに縮小 */
-            }
-            
-            #main-inner {
-                transform: scale(1.282);       /* 逆補正 */
-            }
-            
-            #main-content h1 {
-                font-size: 2em;
-            }
-        }
     </style>
 </head>
 <body>
+    <!-- ローディング画面 -->
     <div id="loading">
         <video id="loading-video" autoplay muted playsinline preload="auto">
             <source src="loadingvideo.mp4" type="video/mp4">
@@ -137,12 +124,13 @@
         <img src="2ndANNIVERSARY-2.png" alt="HARUOMILABO 2nd ANNIVERSARY" class="fallback">
     </div>
     
+    <!-- メイン画面 -->
     <div id="main-content">
         <div id="main-inner">
             <h1>HARUOMILABO2ndANNIVERSARY</h1>
             <p>特設サイトへようこそ！</p>
-            <!-- ここに実際のコンテンツ（画像・テキスト・ボタンなど）を追加してください -->
-            <!-- すべて #main-inner の中に置くと縮小対応が効きます -->
+            <!-- ここにテキスト、画像、ボタンなど実際のコンテンツを追加してください -->
+            <!-- すべて #main-inner の中に入れるとスマホ縮小が適用されます -->
         </div>
     </div>
     

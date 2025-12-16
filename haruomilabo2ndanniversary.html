@@ -11,6 +11,7 @@
             margin: 0;
             padding: 0;
             height: 100%;
+            width: 100%;
             overflow: hidden;
             background-color: #000;
         }
@@ -21,7 +22,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: #000; /* ローディング画面の背景は常に黒 */
+            background-color: #000;
             z-index: 1000;
             transition: opacity 1s ease-out;
         }
@@ -32,8 +33,8 @@
             left: 0;
             width: 100%;
             height: 100%;
-            object-fit: contain; /* スマホでも動画全体が収まるように（アスペクト比を保持して画面にフィット） */
-            background-color: #000; /* 動画の周囲も黒で埋める */
+            object-fit: contain;
+            background-color: #000;
         }
         
         #loading .fallback {
@@ -48,35 +49,55 @@
         
         #main-content {
             display: none;
-            height: 100%;
+            width: 100%;
+            min-height: 100%;
             background-color: #fff;
             color: #000;
             text-align: center;
             padding: 20px;
             box-sizing: border-box;
-            overflow-y: auto; /* スマホでコンテンツが多い場合にスクロール可能 */
+            overflow-y: auto; /* 縦スクロールのみ許可 */
+            overflow-x: hidden; /* 横スクロール絶対禁止 */
         }
         
         #main-content h1 {
             font-size: 2em;
-            margin-top: 50px;
+            margin: 50px 0 20px 0;
+            width: 100%;
         }
         
         #main-content p {
             font-size: 1.2em;
+            width: 100%;
+            margin: 0 auto;
+            max-width: 90%;
         }
         
         .fade-out {
             opacity: 0;
         }
         
-        /* スマホ対応の追加調整 */
+        /* スマホ・タブレット対応 */
         @media (max-width: 768px) {
+            #main-content {
+                padding: 15px;
+            }
             #main-content h1 {
                 font-size: 1.8em;
+                margin-top: 40px;
             }
             #main-content p {
                 font-size: 1em;
+                max-width: 95%;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            #main-content h1 {
+                font-size: 1.6em;
+            }
+            #main-content p {
+                font-size: 0.95em;
             }
         }
     </style>
@@ -86,14 +107,13 @@
         <video id="loading-video" autoplay muted playsinline preload="auto">
             <source src="loadingvideo.mp4" type="video/mp4">
         </video>
-        <!-- 動画が読み込めないときのフォールバック画像（中央表示） -->
         <img src="2ndANNIVERSARY-2.png" alt="HARUOMILABO 2nd ANNIVERSARY" class="fallback">
     </div>
     
     <div id="main-content">
         <h1>HARUOMILABO2ndANNIVERSARY</h1>
         <p>特設サイトへようこそ！</p>
-        <!-- ここに実際のコンテンツを追加してください -->
+        <!-- ここに実際のコンテンツを追加してください（画像やテキストもwidth:100%やmax-widthで制御してください） -->
     </div>
     
     <script>
@@ -105,7 +125,7 @@
         let fadeTimer = null;
         
         function startFadeOut() {
-            if (fadeTimer !== null) return; // 二重実行防止
+            if (fadeTimer !== null) return;
             
             loadingDiv.classList.add('fade-out');
             setTimeout(() => {
@@ -114,11 +134,9 @@
             }, 1000);
         }
         
-        // 動画が実際に再生開始されたらフォールバックを隠す
         video.addEventListener('playing', () => {
             fallback.style.display = 'none';
             
-            // 動画の長さが取得できれば7秒に調整、できなければそのまま7秒待機
             if (video.duration) {
                 const videoTime = video.duration * 1000;
                 const delay = Math.max(7000 - videoTime, 0);
@@ -128,12 +146,11 @@
             }
         });
         
-        // 動画読み込みエラー時 → フォールバック画像を表示
         video.addEventListener('error', () => {
             fallback.style.display = 'block';
         });
         
-        // どんな場合でも7秒後には強制的にメイン画面へ遷移（スマホでも確実に進む）
+        // 強制進行（7秒後）
         setTimeout(startFadeOut, 7000);
     </script>
 </body>

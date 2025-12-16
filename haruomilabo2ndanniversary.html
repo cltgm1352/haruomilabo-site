@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="HARUOMILABO2ndANNIVERSARYの特設サイトです">
+    <title>HARUOMILABO2ndANNIVERSARY</title>
+    <link rel="icon" href="2ndANNIVERSARY-2.png" type="image/png">
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            background-color: #000;
+            overflow: hidden;
+        }
+        
+        #loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #000;
+            display: flex !important;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            transition: opacity 1s ease-out;
+        }
+        
+        #loading video {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+        
+        #loading .fallback-logo {
+            display: none; /* 動画が読み込めないときだけ表示 */
+            max-width: 80%;
+            max-height: 80%;
+        }
+        
+        #main-content {
+            display: none;
+            height: 100%;
+            background-color: #fff;
+            color: #000;
+            text-align: center;
+            padding: 50px;
+            box-sizing: border-box;
+        }
+        
+        .fade-out {
+            opacity: 0;
+        }
+    </style>
+</head>
+<body>
+    <!-- ローディング画面（最優先で表示） -->
+    <div id="loading" style="display: flex !important;">
+        <video id="loading-video" autoplay muted playsinline loop preload="auto">
+            <source src="haruomilabo2ndanniversary/loadingvideo.mp4" type="video/mp4">
+            <!-- 動画が再生できない場合のフォールバック画像 -->
+            <img src="2ndANNIVERSARY-2.png" alt="HARUOMILABO 2nd ANNIVERSARY" class="fallback-logo">
+        </video>
+    </div>
+    
+    <!-- メインコンテンツ -->
+    <div id="main-content">
+        <h1>HARUOMILABO2ndANNIVERSARY</h1>
+        <p>特設サイトへようこそ！</p>
+        <!-- ここに本番コンテンツを追加 -->
+    </div>
+    
+    <script>
+        const loadingDiv = document.getElementById('loading');
+        const mainContent = document.getElementById('main-content');
+        const video = document.getElementById('loading-video');
+        const fallbackLogo = document.querySelector('#loading .fallback-logo');
+        
+        let hasPlayed = false;
+        
+        function startFadeOut() {
+            loadingDiv.classList.add('fade-out');
+            setTimeout(() => {
+                loadingDiv.style.display = 'none';
+                mainContent.style.display = 'block';
+            }, 1000);
+        }
+        
+        // 動画が正常に再生開始されたら
+        video.addEventListener('playing', () => {
+            hasPlayed = true;
+            fallbackLogo.style.display = 'none'; // 動画が再生されたらロゴを隠す
+        });
+        
+        // 動画のメタデータが読み込まれたら（長さ取得可能）
+        video.addEventListener('loadedmetadata', () => {
+            const duration = video.duration * 1000;
+            const delay = Math.max(7000 - duration, 0);
+            setTimeout(startFadeOut, duration + delay);
+        });
+        
+        // 動画がエラーになった場合 → フォールバックロゴを表示して7秒後に遷移
+        video.addEventListener('error', () => {
+            fallbackLogo.style.display = 'block';
+            setTimeout(startFadeOut, 7000);
+        });
+        
+        // 動画が終わった場合（loop属性があるので通常は来ないが念のため）
+        video.addEventListener('ended', () => {
+            setTimeout(startFadeOut, 7000 - video.currentTime * 1000);
+        });
+        
+        // 最終的な強制フォールバック：どんな状況でも7秒後にメイン画面へ
+        setTimeout(() => {
+            if (loadingDiv.style.display !== 'none') {
+                startFadeOut();
+            }
+        }, 7000);
+    </script>
+</body>
+</html>

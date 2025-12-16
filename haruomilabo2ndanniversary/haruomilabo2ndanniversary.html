@@ -22,7 +22,7 @@
             width: 100%;
             height: 100%;
             background-color: #000;
-            display: flex !important; /* 強制的に表示 */
+            display: flex !important;
             justify-content: center;
             align-items: center;
             z-index: 1000;
@@ -35,8 +35,14 @@
             object-fit: contain;
         }
         
+        #loading .fallback-logo {
+            display: none; /* 動画が読み込めないときだけ表示 */
+            max-width: 80%;
+            max-height: 80%;
+        }
+        
         #main-content {
-            display: none; /* 最初は完全に非表示 */
+            display: none;
             height: 100%;
             background-color: #fff;
             color: #000;
@@ -51,55 +57,63 @@
     </style>
 </head>
 <body>
-    <!-- ローディング画面（ページを開いた瞬間に確実に表示） -->
+    <!-- ローディング画面（最優先で表示） -->
     <div id="loading" style="display: flex !important;">
-        <video id="loading-video" autoplay muted playsinline preload="auto">
+        <video id="loading-video" autoplay muted playsinline loop preload="auto">
             <source src="haruomilabo2ndanniversary/loadingvideo.mp4" type="video/mp4">
-            あなたのブラウザはビデオをサポートしていません。
+            <!-- 動画が再生できない場合のフォールバック画像 -->
+            <img src="haruomilabo2ndanniversary/2ndANNIVERSARY-2.png" alt="HARUOMILABO 2nd ANNIVERSARY" class="fallback-logo">
         </video>
     </div>
     
-    <!-- メインコンテンツ（最初は非表示） -->
+    <!-- メインコンテンツ -->
     <div id="main-content">
         <h1>HARUOMILABO2ndANNIVERSARY</h1>
         <p>特設サイトへようこそ！</p>
-        <!-- ここに本番のコンテンツを追加してください -->
+        <!-- ここに本番コンテンツを追加 -->
     </div>
     
     <script>
         const loadingDiv = document.getElementById('loading');
         const mainContent = document.getElementById('main-content');
         const video = document.getElementById('loading-video');
+        const fallbackLogo = document.querySelector('#loading .fallback-logo');
         
-        let fadeTimer;
+        let hasPlayed = false;
         
         function startFadeOut() {
             loadingDiv.classList.add('fade-out');
             setTimeout(() => {
                 loadingDiv.style.display = 'none';
                 mainContent.style.display = 'block';
-            }, 1000); // フェードアウト時間（1秒）と合わせる
+            }, 1000);
         }
         
-        // ビデオの長さを取得できたら、それに応じて7秒になるよう調整
+        // 動画が正常に再生開始されたら
+        video.addEventListener('playing', () => {
+            hasPlayed = true;
+            fallbackLogo.style.display = 'none'; // 動画が再生されたらロゴを隠す
+        });
+        
+        // 動画のメタデータが読み込まれたら（長さ取得可能）
         video.addEventListener('loadedmetadata', () => {
-            const videoDuration = video.duration;
-            const delay = Math.max(7000 - videoDuration * 1000, 0);
-            fadeTimer = setTimeout(startFadeOut, videoDuration * 1000 + delay);
+            const duration = video.duration * 1000;
+            const delay = Math.max(7000 - duration, 0);
+            setTimeout(startFadeOut, duration + delay);
         });
         
-        // ビデオが終わったときのフォールバック
+        // 動画がエラーになった場合 → フォールバックロゴを表示して7秒後に遷移
+        video.addEventListener('error', () => {
+            fallbackLogo.style.display = 'block';
+            setTimeout(startFadeOut, 7000);
+        });
+        
+        // 動画が終わった場合（loop属性があるので通常は来ないが念のため）
         video.addEventListener('ended', () => {
-            if (fadeTimer) clearTimeout(fadeTimer);
-            const remaining = 7000 - video.currentTime * 1000;
-            if (remaining > 0) {
-                setTimeout(startFadeOut, remaining);
-            } else {
-                startFadeOut();
-            }
+            setTimeout(startFadeOut, 7000 - video.currentTime * 1000);
         });
         
-        // 万一のフォールバック：どんな状況でも7秒後に必ず切り替わる
+        // 最終的な強制フォールバック：どんな状況でも7秒後にメイン画面へ
         setTimeout(() => {
             if (loadingDiv.style.display !== 'none') {
                 startFadeOut();

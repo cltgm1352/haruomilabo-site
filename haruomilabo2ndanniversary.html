@@ -80,49 +80,36 @@
         const video = document.getElementById('loading-video');
         const fallback = document.querySelector('#loading .fallback');
         
-        let canProceed = false;  // 動画が正常に再生された場合のみtrueにする
+        let fadeTimer = null;
         
         function startFadeOut() {
-            if (!canProceed) return;  // 再生成功していない場合はフェードアウトしない
+            if (fadeTimer !== null) return; // 二重実行防止
             
-            loadingDiv.classList.add('fade-out');
-            setTimeout(() => {
-                loadingDiv.style.display = 'none';
-                mainContent.style.display = 'block';
-            }, 1000);
+            fadeTimer = setTimeout(() => {
+                loadingDiv.classList.add('fade-out');
+                setTimeout(() => {
+                    loadingDiv.style.display = 'none';
+                    mainContent.style.display = 'block';
+                }, 1000);
+            }, 0);
         }
         
-        // 動画が実際に再生開始されたら成功とみなす
+        // 動画が実際に再生開始されたらフォールバックを隠して7秒タイマー開始
         video.addEventListener('playing', () => {
-            canProceed = true;
-            fallback.style.display = 'none';  // フォールバック画像を隠す
+            fallback.style.display = 'none';
+            
+            const videoTime = (video.duration || 0) * 1000;
+            const delay = Math.max(7000 - videoTime, 0);
+            setTimeout(startFadeOut, videoTime + delay);
         });
         
-        // 動画のメタデータが読み込まれた＝再生可能と判断
-        video.addEventListener('loadedmetadata', () => {
-            if (canProceed) {  // すでにplayingが発火していればここでタイマー開始
-                const videoTime = video.duration * 1000;
-                const delay = Math.max(7000 - videoTime, 0);
-                setTimeout(startFadeOut, videoTime + delay);
-            }
-        });
-        
-        // 動画読み込みエラー → フォールバック画像を表示して待機（フェードアウトしない）
+        // 動画読み込みエラー時 → フォールバック画像を表示
         video.addEventListener('error', () => {
             fallback.style.display = 'block';
-            // canProceed は false のまま → フェードアウトしない
         });
         
-        // 念のため、動画がstalledやsuspendになっても待機
-        video.addEventListener('stalled', () => {
-            fallback.style.display = 'block';
-        });
-        
-        // 動画が正常に再生された場合のみ、最大待機時間として10秒後に強制進行（安全策）
-        // ※ 必要なければ削除してください
-        // setTimeout(() => {
-        //     if (canProceed) startFadeOut();
-        // }, 10000);
+        // どんな場合でも7秒後には強制的にメイン画面へ遷移（これで止まらなくなる）
+        setTimeout(startFadeOut, 7000);
     </script>
 </body>
 </html>

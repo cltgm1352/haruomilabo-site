@@ -5,14 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="HARUOMILABO2ndANNIVERSARYの特設サイトです">
     <title>HARUOMILABO2ndANNIVERSARY</title>
-    <link rel="icon" href="2ndANNIVERSARY-2.png" type="image/png">
+    <link rel="icon" href="haruomilabo2ndanniversary/2ndANNIVERSARY-2.png" type="image/png">
     <style>
         body, html {
             margin: 0;
             padding: 0;
             height: 100%;
-            background-color: #000;
             overflow: hidden;
+            background-color: #000;
         }
         
         #loading {
@@ -22,23 +22,27 @@
             width: 100%;
             height: 100%;
             background-color: #000;
-            display: flex !important;
-            justify-content: center;
-            align-items: center;
             z-index: 1000;
             transition: opacity 1s ease-out;
         }
         
         #loading video {
-            max-width: 100%;
-            max-height: 100%;
-            object-fit: contain;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* フルスクリーンでカバー */
         }
         
-        #loading .fallback-logo {
-            display: none; /* 動画が読み込めないときだけ表示 */
+        #loading .fallback {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
             max-width: 80%;
             max-height: 80%;
+            display: none;
         }
         
         #main-content {
@@ -57,31 +61,33 @@
     </style>
 </head>
 <body>
-    <!-- ローディング画面（最優先で表示） -->
-    <div id="loading" style="display: flex !important;">
-        <video id="loading-video" autoplay muted playsinline loop preload="auto">
+    <!-- ローディング画面（必ず黒背景が表示される） -->
+    <div id="loading">
+        <video id="loading-video" autoplay muted playsinline preload="auto">
             <source src="haruomilabo2ndanniversary/loadingvideo.mp4" type="video/mp4">
-            <!-- 動画が再生できない場合のフォールバック画像 -->
-            <img src="2ndANNIVERSARY-2.png" alt="HARUOMILABO 2nd ANNIVERSARY" class="fallback-logo">
         </video>
+        <!-- 動画が読み込めないときのフォールバック（ロゴ画像） -->
+        <img src="haruomilabo2ndanniversary/2ndANNIVERSARY-2.png" alt="HARUOMILABO 2nd ANNIVERSARY" class="fallback">
     </div>
     
     <!-- メインコンテンツ -->
     <div id="main-content">
         <h1>HARUOMILABO2ndANNIVERSARY</h1>
         <p>特設サイトへようこそ！</p>
-        <!-- ここに本番コンテンツを追加 -->
     </div>
     
     <script>
         const loadingDiv = document.getElementById('loading');
         const mainContent = document.getElementById('main-content');
         const video = document.getElementById('loading-video');
-        const fallbackLogo = document.querySelector('#loading .fallback-logo');
+        const fallback = document.querySelector('#loading .fallback');
         
-        let hasPlayed = false;
+        let timerStarted = false;
         
         function startFadeOut() {
+            if (timerStarted) return;
+            timerStarted = true;
+            
             loadingDiv.classList.add('fade-out');
             setTimeout(() => {
                 loadingDiv.style.display = 'none';
@@ -89,36 +95,26 @@
             }, 1000);
         }
         
-        // 動画が正常に再生開始されたら
+        // 動画が正常に再生され始めたらフォールバックを隠す
         video.addEventListener('playing', () => {
-            hasPlayed = true;
-            fallbackLogo.style.display = 'none'; // 動画が再生されたらロゴを隠す
+            fallback.style.display = 'none';
         });
         
-        // 動画のメタデータが読み込まれたら（長さ取得可能）
-        video.addEventListener('loadedmetadata', () => {
-            const duration = video.duration * 1000;
-            const delay = Math.max(7000 - duration, 0);
-            setTimeout(startFadeOut, duration + delay);
-        });
-        
-        // 動画がエラーになった場合 → フォールバックロゴを表示して7秒後に遷移
+        // 動画がエラーになったらフォールバック画像を表示
         video.addEventListener('error', () => {
-            fallbackLogo.style.display = 'block';
-            setTimeout(startFadeOut, 7000);
+            fallback.style.display = 'block';
         });
         
-        // 動画が終わった場合（loop属性があるので通常は来ないが念のため）
-        video.addEventListener('ended', () => {
-            setTimeout(startFadeOut, 7000 - video.currentTime * 1000);
+        // 動画のメタデータが読み込まれたら7秒後に遷移
+        video.addEventListener('loadedmetadata', () => {
+            const totalTime = 7000;
+            const videoTime = video.duration * 1000;
+            const delay = Math.max(totalTime - videoTime, 0);
+            setTimeout(startFadeOut, videoTime + delay);
         });
         
-        // 最終的な強制フォールバック：どんな状況でも7秒後にメイン画面へ
-        setTimeout(() => {
-            if (loadingDiv.style.display !== 'none') {
-                startFadeOut();
-            }
-        }, 7000);
+        // どんな状況でも7秒後に必ずフェードアウト（最重要フォールバック）
+        setTimeout(startFadeOut, 7000);
     </script>
 </body>
 </html>

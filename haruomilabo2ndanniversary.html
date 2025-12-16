@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="HARUOMILABO2ndANNIVERSARYの特設サイトです">
     <title>HARUOMILABO2ndANNIVERSARY</title>
+    <!-- ファビコンを2ndANNIVERSARY-2.pngに変更 -->
     <link rel="icon" href="2ndANNIVERSARY-2.png" type="image/png">
     <style>
         body, html {
@@ -61,12 +62,13 @@
     </style>
 </head>
 <body>
-    <!-- ローディング画面（必ず黒背景が表示される） -->
+    <!-- ローディング画面 -->
     <div id="loading">
+        <!-- 動画パスをloadingvideo.mp4に変更 -->
         <video id="loading-video" autoplay muted playsinline preload="auto">
-            <source src="haruomilabo2ndanniversary/loadingvideo.mp4" type="video/mp4">
+            <source src="loadingvideo.mp4" type="video/mp4">
         </video>
-        <!-- 動画が読み込めないときのフォールバック（ロゴ画像） -->
+        <!-- 動画が読み込めないときのフォールバック（ファビコンと同じ画像） -->
         <img src="2ndANNIVERSARY-2.png" alt="HARUOMILABO 2nd ANNIVERSARY" class="fallback">
     </div>
     
@@ -74,6 +76,7 @@
     <div id="main-content">
         <h1>HARUOMILABO2ndANNIVERSARY</h1>
         <p>特設サイトへようこそ！</p>
+        <!-- ここに実際のコンテンツを追加してください -->
     </div>
     
     <script>
@@ -95,25 +98,24 @@
             }, 1000);
         }
         
-        // 動画が正常に再生され始めたらフォールバックを隠す
+        // 動画が再生され始めたらフォールバック画像を隠す
         video.addEventListener('playing', () => {
             fallback.style.display = 'none';
         });
         
-        // 動画がエラーになったらフォールバック画像を表示
+        // 動画読み込みエラー時 → フォールバック画像を表示
         video.addEventListener('error', () => {
             fallback.style.display = 'block';
         });
         
-        // 動画のメタデータが読み込まれたら7秒後に遷移
+        // 動画の長さが取得できたら7秒に調整
         video.addEventListener('loadedmetadata', () => {
-            const totalTime = 7000;
             const videoTime = video.duration * 1000;
-            const delay = Math.max(totalTime - videoTime, 0);
+            const delay = Math.max(7000 - videoTime, 0);
             setTimeout(startFadeOut, videoTime + delay);
         });
         
-        // どんな状況でも7秒後に必ずフェードアウト（最重要フォールバック）
+        // どんな場合でも7秒後に必ずメイン画面へ遷移
         setTimeout(startFadeOut, 7000);
     </script>
 </body>

@@ -11,8 +11,8 @@
             margin: 0;
             padding: 0;
             height: 100%;
+            background-color: #000;
             overflow: hidden;
-            background-color: #000; /* ローディング中の背景 */
         }
         
         #loading {
@@ -22,7 +22,7 @@
             width: 100%;
             height: 100%;
             background-color: #000;
-            display: flex;
+            display: flex !important; /* 強制的に表示 */
             justify-content: center;
             align-items: center;
             z-index: 1000;
@@ -36,9 +36,9 @@
         }
         
         #main-content {
-            display: none;
+            display: none; /* 最初は完全に非表示 */
             height: 100%;
-            background-color: #fff; /* メインコンテンツの背景、必要に応じて変更 */
+            background-color: #fff;
             color: #000;
             text-align: center;
             padding: 50px;
@@ -51,17 +51,19 @@
     </style>
 </head>
 <body>
-    <div id="loading">
-        <video id="loading-video" autoplay muted playsinline>
+    <!-- ローディング画面（ページを開いた瞬間に確実に表示） -->
+    <div id="loading" style="display: flex !important;">
+        <video id="loading-video" autoplay muted playsinline preload="auto">
             <source src="haruomilabo2ndanniversary/loadingvideo.mp4" type="video/mp4">
             あなたのブラウザはビデオをサポートしていません。
         </video>
     </div>
     
+    <!-- メインコンテンツ（最初は非表示） -->
     <div id="main-content">
         <h1>HARUOMILABO2ndANNIVERSARY</h1>
         <p>特設サイトへようこそ！</p>
-        <!-- ここにメインコンテンツを追加してください -->
+        <!-- ここに本番のコンテンツを追加してください -->
     </div>
     
     <script>
@@ -76,17 +78,17 @@
             setTimeout(() => {
                 loadingDiv.style.display = 'none';
                 mainContent.style.display = 'block';
-            }, 1000); // フェードアウトのtransition時間に合わせる
+            }, 1000); // フェードアウト時間（1秒）と合わせる
         }
         
+        // ビデオの長さを取得できたら、それに応じて7秒になるよう調整
         video.addEventListener('loadedmetadata', () => {
             const videoDuration = video.duration;
             const delay = Math.max(7000 - videoDuration * 1000, 0);
-            
             fadeTimer = setTimeout(startFadeOut, videoDuration * 1000 + delay);
         });
         
-        // ビデオが自然に終わったら待機、またはエラー時も7秒で進むフォールバック
+        // ビデオが終わったときのフォールバック
         video.addEventListener('ended', () => {
             if (fadeTimer) clearTimeout(fadeTimer);
             const remaining = 7000 - video.currentTime * 1000;
@@ -97,7 +99,7 @@
             }
         });
         
-        // フォールバック: ビデオがロードされなくても7秒後に進む
+        // 万一のフォールバック：どんな状況でも7秒後に必ず切り替わる
         setTimeout(() => {
             if (loadingDiv.style.display !== 'none') {
                 startFadeOut();

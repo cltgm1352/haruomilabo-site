@@ -74,27 +74,15 @@
             position: relative;
         }
         
-        /* 背景動画コンテナ */
-        .video-container {
+        /* 背景動画 */
+        #header-video {
             position: absolute;
             top: 120px;
             left: 0;
             width: 100%;
             height: calc(100% - 120px);
-            overflow: hidden;
-            z-index: 1;
-        }
-        
-        #header-video {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            min-width: 100%;
-            min-height: 100%;
-            width: auto;
-            height: auto;
-            transform: translate(-50%, -50%);
             object-fit: cover;
+            z-index: 1;
         }
         
         /* ヘッダー */
@@ -218,7 +206,7 @@
             opacity: 0;
         }
         
-        /* スマホ対応：ほんの少しだけズームアウト（min-width/min-heightを少し小さく） */
+        /* スマホ対応：スマホのみobject-fit: containに切り替え、全体が見えるように */
         @media (max-width: 768px) {
             header {
                 height: 100px;
@@ -232,13 +220,11 @@
             .hamburger {
                 right: 15px;
             }
-            .video-container {
+            #header-video {
                 top: 100px;
                 height: calc(100% - 100px);
-            }
-            #header-video {
-                min-width: 102%; /* ほんの少しだけ小さくしてズームアウト効果 */
-                min-height: 102%;
+                object-fit: contain; /* スマホだけcontainにして全体が見える */
+                background-color: #000; /* 余白は黒で埋める */
             }
             #main-inner {
                 transform: scale(0.9);
@@ -258,13 +244,11 @@
             .hamburger {
                 right: 10px;
             }
-            .video-container {
+            #header-video {
                 top: 90px;
                 height: calc(100% - 90px);
-            }
-            #header-video {
-                min-width: 103%;
-                min-height: 103%;
+                object-fit: contain;
+                background-color: #000;
             }
             #main-inner {
                 transform: scale(0.8);
@@ -282,11 +266,9 @@
     </div>
     
     <div id="main-content">
-        <div class="video-container">
-            <video id="header-video" autoplay muted loop playsinline>
-                <source src="2nd_video_1.mp4" type="video/mp4">
-            </video>
-        </div>
+        <video id="header-video" autoplay muted loop playsinline>
+            <source src="2nd_video_1.mp4" type="video/mp4">
+        </video>
         
         <header>
             <img src="2ndANNIVERSARY-2.png" alt="HARUOMILABO 2nd ANNIVERSARY" class="logo">

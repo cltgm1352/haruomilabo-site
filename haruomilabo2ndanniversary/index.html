@@ -74,13 +74,13 @@
             position: relative;
         }
         
-        /* 背景動画：ヘッダーの下からではなく、ヘッダーのさらに下（メインコンテンツの上部）から開始 */
+        /* 背景動画：ヘッダーのすぐ下から開始（ズームなし） */
         #header-video {
             position: absolute;
-            top: 180px; /* ヘッダー（120px） + 余白60px */
+            top: 120px;
             left: 0;
             width: 100%;
-            height: calc(100% - 180px);
+            height: calc(100% - 120px);
             object-fit: cover;
             z-index: 1;
         }
@@ -199,14 +199,14 @@
             width: 100%;
             max-width: 1000px;
             margin: 0 auto;
-            padding: 200px 20px 40px; /* 上部に余白を増やして動画がヘッダーのすぐ下に来ないように */
+            padding: 140px 20px 40px;
         }
         
         .fade-out {
             opacity: 0;
         }
         
-        /* スマホ対応 */
+        /* スマホ対応（ズーム・containなし、PCと同じcover） */
         @media (max-width: 768px) {
             header {
                 height: 100px;
@@ -221,13 +221,14 @@
                 right: 15px;
             }
             #header-video {
-                top: 150px; /* スマホではヘッダー下に余白を少し */
-                height: calc(100% - 150px);
+                top: 100px;
+                height: calc(100% - 100px);
+                object-fit: cover; /* スマホもcoverで統一 */
             }
             #main-inner {
                 transform: scale(0.9);
                 transform-origin: top center;
-                padding-top: 170px;
+                padding-top: 120px;
             }
         }
         
@@ -243,12 +244,12 @@
                 right: 10px;
             }
             #header-video {
-                top: 140px;
-                height: calc(100% - 140px);
+                top: 90px;
+                height: calc(100% - 90px);
             }
             #main-inner {
                 transform: scale(0.8);
-                padding-top: 160px;
+                padding-top: 100px;
             }
         }
     </style>

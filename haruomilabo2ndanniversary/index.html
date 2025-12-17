@@ -74,10 +74,10 @@
             position: relative;
         }
         
-        /* 背景動画 */
+        /* 背景動画：ヘッダーの下からぴったり開始、左右端までフルに表示 */
         #header-video {
             position: absolute;
-            top: 120px;
+            top: 120px; /* ヘッダー高さ分だけ下に */
             left: 0;
             width: 100%;
             height: calc(100% - 120px);
@@ -206,7 +206,7 @@
             opacity: 0;
         }
         
-        /* スマホ対応：動画の左右をもう少し表示（ズームアウト強化） */
+        /* スマホ対応：空白をなくし、動画を画面端まで広げる */
         @media (max-width: 768px) {
             header {
                 height: 100px;
@@ -221,10 +221,12 @@
                 right: 15px;
             }
             #header-video {
-                top: 100px;
+                top: 100px; /* ヘッダーの下からぴったり */
+                left: 0;
+                width: 100%;
                 height: calc(100% - 100px);
-                transform: scale(0.88); /* さらにズームアウトして左右を広く表示 */
-                transform-origin: center center;
+                transform: none; /* scaleを外して空白なし */
+                object-fit: cover; /* 端までフル表示 */
             }
             #main-inner {
                 transform: scale(0.9);
@@ -247,7 +249,6 @@
             #header-video {
                 top: 90px;
                 height: calc(100% - 90px);
-                transform: scale(0.84); /* 小さい画面ではもっと左右を表示 */
             }
             #main-inner {
                 transform: scale(0.8);

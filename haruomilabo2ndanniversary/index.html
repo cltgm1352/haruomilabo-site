@@ -74,13 +74,13 @@
             position: relative;
         }
         
-        /* 背景動画 */
+        /* 背景動画：ヘッダーの下からではなく、ヘッダーのさらに下（メインコンテンツの上部）から開始 */
         #header-video {
             position: absolute;
-            top: 120px;
+            top: 180px; /* ヘッダー（120px） + 余白60px */
             left: 0;
             width: 100%;
-            height: calc(100% - 120px);
+            height: calc(100% - 180px);
             object-fit: cover;
             z-index: 1;
         }
@@ -199,14 +199,14 @@
             width: 100%;
             max-width: 1000px;
             margin: 0 auto;
-            padding: 140px 20px 40px;
+            padding: 200px 20px 40px; /* 上部に余白を増やして動画がヘッダーのすぐ下に来ないように */
         }
         
         .fade-out {
             opacity: 0;
         }
         
-        /* スマホ対応：スマホのみobject-fit: containに切り替え、全体が見えるように */
+        /* スマホ対応 */
         @media (max-width: 768px) {
             header {
                 height: 100px;
@@ -221,15 +221,13 @@
                 right: 15px;
             }
             #header-video {
-                top: 100px;
-                height: calc(100% - 100px);
-                object-fit: contain; /* スマホだけcontainにして全体が見える */
-                background-color: #000; /* 余白は黒で埋める */
+                top: 150px; /* スマホではヘッダー下に余白を少し */
+                height: calc(100% - 150px);
             }
             #main-inner {
                 transform: scale(0.9);
                 transform-origin: top center;
-                padding-top: 120px;
+                padding-top: 170px;
             }
         }
         
@@ -245,14 +243,12 @@
                 right: 10px;
             }
             #header-video {
-                top: 90px;
-                height: calc(100% - 90px);
-                object-fit: contain;
-                background-color: #000;
+                top: 140px;
+                height: calc(100% - 140px);
             }
             #main-inner {
                 transform: scale(0.8);
-                padding-top: 100px;
+                padding-top: 160px;
             }
         }
     </style>

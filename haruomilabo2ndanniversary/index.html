@@ -74,15 +74,14 @@
             position: relative;
         }
         
-        /* 背景動画 */
+        /* 背景動画（PCではcover、スマホでは少しズームアウト風） */
         #header-video {
             position: absolute;
-            top: 120px; /* PCヘッダー高さ分 */
+            top: 120px;
             left: 0;
             width: 100%;
             height: calc(100% - 120px);
-            object-fit: contain; /* スマホでは全体が見えるようにcontainに変更 */
-            background-color: #000; /* 余白部分は黒で埋める */
+            object-fit: cover;
             z-index: 1;
         }
         
@@ -206,7 +205,7 @@
             opacity: 0;
         }
         
-        /* スマホ対応：動画を全体が見えるようにcontain + 少し縮小 */
+        /* スマホ対応：動画を少しズームアウト風（coverのままscaleで縮小） */
         @media (max-width: 768px) {
             header {
                 height: 100px;
@@ -221,13 +220,8 @@
             #header-video {
                 top: 100px;
                 height: calc(100% - 100px);
-                object-fit: contain; /* 全体が見える */
-                max-width: 95%; /* 少し縮小して余白を作る */
-                max-height: 95%;
-                width: auto;
-                height: auto;
-                left: 50%;
-                transform: translateX(-50%); /* 中央寄せ */
+                transform: scale(1.1); /* 少し拡大してcoverのトリミングを抑える → ズームアウト風に見える */
+                transform-origin: center center;
             }
             #main-inner {
                 transform: scale(0.9);
@@ -250,8 +244,7 @@
             #header-video {
                 top: 90px;
                 height: calc(100% - 90px);
-                max-width: 90%; /* さらに少し縮小 */
-                max-height: 90%;
+                transform: scale(1.15); /* 小さい画面ではもう少し拡大 */
             }
             #main-inner {
                 transform: scale(0.8);

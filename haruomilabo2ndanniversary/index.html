@@ -74,7 +74,7 @@
             position: relative;
         }
         
-        /* 背景動画のコンテナ（ズームアウト効果をここで実現） */
+        /* 背景動画コンテナ */
         .video-container {
             position: absolute;
             top: 120px;
@@ -218,7 +218,7 @@
             opacity: 0;
         }
         
-        /* スマホ対応：ほんの少しズームアウト（min-width/min-heightを105%に） */
+        /* スマホ対応：ほんの少しだけズームアウト（min-width/min-heightを少し小さく） */
         @media (max-width: 768px) {
             header {
                 height: 100px;
@@ -237,8 +237,8 @@
                 height: calc(100% - 100px);
             }
             #header-video {
-                min-width: 105%; /* ほんの少しだけ大きくしてトリミングを軽減 */
-                min-height: 105%;
+                min-width: 102%; /* ほんの少しだけ小さくしてズームアウト効果 */
+                min-height: 102%;
             }
             #main-inner {
                 transform: scale(0.9);
@@ -263,8 +263,8 @@
                 height: calc(100% - 90px);
             }
             #header-video {
-                min-width: 108%;
-                min-height: 108%;
+                min-width: 103%;
+                min-height: 103%;
             }
             #main-inner {
                 transform: scale(0.8);
@@ -282,7 +282,6 @@
     </div>
     
     <div id="main-content">
-        <!-- 背景動画コンテナ（ズームアウト効果） -->
         <div class="video-container">
             <video id="header-video" autoplay muted loop playsinline>
                 <source src="2nd_video_1.mp4" type="video/mp4">

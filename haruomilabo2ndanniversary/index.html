@@ -206,7 +206,7 @@
             opacity: 0;
         }
         
-        /* スマホ対応：coverのまま少しズームアウトして左右全体が見えるように */
+        /* スマホ対応：ちょっとだけズームアウト */
         @media (max-width: 768px) {
             header {
                 height: 100px;
@@ -223,8 +223,8 @@
             #header-video {
                 top: 100px;
                 height: calc(100% - 100px);
-                transform: scale(1.15); /* 拡大してトリミングを抑え、全体感を出す */
-                transform-origin: top center; /* 上部中央を基準に拡大（ヘッダー下に空白が出ない） */
+                transform: scale(0.95); /* ちょっとだけズームアウト（5%縮小） */
+                transform-origin: top center; /* 上部中央基準でヘッダー下に隙間が出ない */
             }
             #main-inner {
                 transform: scale(0.9);
@@ -247,7 +247,7 @@
             #header-video {
                 top: 90px;
                 height: calc(100% - 90px);
-                transform: scale(1.2); /* 小さい画面ではさらに拡大 */
+                transform: scale(0.93); /* 小さい画面ではもう少しズームアウト */
                 transform-origin: top center;
             }
             #main-inner {

@@ -14,6 +14,23 @@
             width: 100%;
             overflow: hidden;
             background-color: #000;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+        
+        img, video {
+            -webkit-user-drag: none;
+            -khtml-user-drag: none;
+            -moz-user-drag: none;
+            -o-user-drag: none;
+            user-drag: none;
+            pointer-events: none;
+        }
+        
+        body {
+            -webkit-touch-callout: none;
         }
         
         #loading {
@@ -30,7 +47,6 @@
             align-items: center;
         }
         
-        /* ローディング動画：フルスクリーンで全体が見えるように戻す */
         #loading video {
             max-width: 100%;
             max-height: 100%;
@@ -50,72 +66,168 @@
             display: none;
             width: 100%;
             min-height: 100%;
-            background-color: #fff; /* 背景は白のまま */
+            background-color: #fff;
             color: #000;
             text-align: center;
-            padding: 40px 20px;
             box-sizing: border-box;
             overflow: hidden;
         }
         
+        /* ヘッダー：ロゴを中心に、ハンバーガーは右端に安全に配置 */
+        header {
+            width: 100%;
+            padding: 20px 60px 20px 20px; /* 右側にハンバーガー分の余白を確保 */
+            background-color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            border-bottom: 1px solid #eee;
+            box-sizing: border-box;
+        }
+        
+        header .logo {
+            height: 60px; /* 中位サイズ */
+            max-width: 80%; /* ロゴが大きすぎてはみ出さないように制限 */
+        }
+        
+        /* ハンバーガーメニュー（開くボタン） */
+        .hamburger {
+            position: absolute;
+            right: 20px; /* 右端から20px内側に固定 */
+            top: 50%;
+            transform: translateY(-50%);
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 11;
+        }
+        
+        .hamburger span {
+            width: 30px;
+            height: 4px;
+            background-color: #000;
+            margin: 3px 0;
+            transition: 0.3s;
+        }
+        
+        /* メニュー本体 */
+        #nav-menu {
+            position: fixed;
+            top: 0;
+            right: -300px;
+            width: 300px;
+            height: 100%;
+            background-color: rgba(0,0,0,0.95);
+            transition: right 0.4s ease;
+            z-index: 999;
+            padding-top: 80px;
+            box-sizing: border-box;
+        }
+        
+        #nav-menu.open {
+            right: 0;
+        }
+        
+        /* 閉じるボタン（×） */
+        .close-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
+            font-size: 30px;
+            color: #fff;
+        }
+        
+        .close-btn::before, .close-btn::after {
+            content: '';
+            position: absolute;
+            width: 30px;
+            height: 4px;
+            background-color: #fff;
+            top: 18px;
+            left: 5px;
+        }
+        
+        .close-btn::before {
+            transform: rotate(45deg);
+        }
+        
+        .close-btn::after {
+            transform: rotate(-45deg);
+        }
+        
+        #nav-menu ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        #nav-menu li {
+            text-align: center;
+            padding: 20px 0;
+        }
+        
+        #nav-menu a {
+            color: #fff;
+            font-size: 1.5em;
+            text-decoration: none;
+        }
+        
         #main-inner {
             width: 100%;
-            max-width: 1000px; /* PCでは最大幅制限 */
+            max-width: 1000px;
             margin: 0 auto;
-        }
-        
-        #main-content h1 {
-            font-size: 2.8em;
-            margin: 0 0 30px 0;
-        }
-        
-        #main-content p {
-            font-size: 1.5em;
-            max-width: 90%;
-            margin: 0 auto 40px;
+            padding: 60px 20px 40px;
         }
         
         .fade-out {
             opacity: 0;
         }
         
-        /* スマホ対応：コンテンツ全体を少し縮小して画面内に収める */
+        /* スマホ対応 */
         @media (max-width: 768px) {
-            #main-content {
-                padding: 20px 15px;
+            header {
+                padding: 15px 55px 15px 15px; /* 右余白を確保 */
             }
-            
+            header .logo {
+                height: 50px;
+                max-width: 75%;
+            }
+            .hamburger {
+                right: 15px;
+            }
             #main-inner {
-                transform: scale(0.9);         /* 全体を90%に縮小 */
+                transform: scale(0.9);
                 transform-origin: top center;
-            }
-            
-            #main-content h1 {
-                font-size: 2.4em;
-                margin-bottom: 25px;
-            }
-            
-            #main-content p {
-                font-size: 1.3em;
+                padding-top: 40px;
             }
         }
         
         @media (max-width: 480px) {
+            header {
+                padding: 10px 50px 10px 10px;
+            }
+            header .logo {
+                height: 45px;
+                max-width: 70%;
+            }
+            .hamburger {
+                right: 10px;
+            }
             #main-inner {
-                transform: scale(0.8);         /* より小さい画面では80% */
-            }
-            
-            #main-content h1 {
-                font-size: 2.1em;
-            }
-            
-            #main-content p {
-                font-size: 1.2em;
+                transform: scale(0.8);
             }
         }
     </style>
 </head>
-<body>
+<body oncontextmenu="return false;">
     <!-- ローディング画面 -->
     <div id="loading">
         <video id="loading-video" autoplay muted playsinline preload="auto">
@@ -126,15 +238,38 @@
     
     <!-- メイン画面 -->
     <div id="main-content">
+        <!-- ヘッダー -->
+        <header>
+            <img src="haruomilabo2ndanniversary/2ndANNIVERSARY-2.png" alt="HARUOMILABO 2nd ANNIVERSARY" class="logo">
+            <div class="hamburger" onclick="toggleMenu()">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </header>
+        
+        <!-- ハンバーガーメニュー -->
+        <nav id="nav-menu">
+            <div class="close-btn" onclick="toggleMenu()"></div>
+            <ul>
+                <li><a href="#">ホーム</a></li>
+                <li><a href="#">ニュース</a></li>
+            </ul>
+        </nav>
+        
+        <!-- メインコンテンツ本体 -->
         <div id="main-inner">
-            <h1>HARUOMILABO2ndANNIVERSARY</h1>
-            <p>特設サイトへようこそ！</p>
-            <!-- ここにテキスト、画像、ボタンなど実際のコンテンツを追加してください -->
-            <!-- すべて #main-inner の中に入れるとスマホ縮小が適用されます -->
+            <!-- ここから実際のコンテンツを追加してください -->
         </div>
     </div>
     
     <script>
+        // ハンバーガーメニュー開閉
+        function toggleMenu() {
+            document.getElementById('nav-menu').classList.toggle('open');
+        }
+        
+        // ローディング処理
         const loadingDiv = document.getElementById('loading');
         const mainContent = document.getElementById('main-content');
         const video = document.getElementById('loading-video');

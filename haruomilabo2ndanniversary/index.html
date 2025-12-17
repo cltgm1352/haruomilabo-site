@@ -85,13 +85,13 @@
             z-index: 1;
         }
         
-        /* ヘッダー：少し透過（背景動画がほんのり見える） */
+        /* ヘッダー：少し透過 */
         header {
             width: 100%;
             height: 120px;
             padding: 20px 70px 20px 20px;
-            background-color: rgba(255, 255, 255, 0.85); /* 85%不透明 → 少し透過 */
-            backdrop-filter: blur(8px); /* 背景をぼかして読みやすく */
+            background-color: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(8px);
             display: flex;
             justify-content: center;
             align-items: center;
@@ -206,7 +206,7 @@
             opacity: 0;
         }
         
-        /* スマホ対応：動画を少しズームアウト（scale < 1） */
+        /* スマホ対応：動画の左右をもう少し表示（ズームアウト強化） */
         @media (max-width: 768px) {
             header {
                 height: 100px;
@@ -223,7 +223,7 @@
             #header-video {
                 top: 100px;
                 height: calc(100% - 100px);
-                transform: scale(0.92); /* 少しズームアウト（全体がより見える） */
+                transform: scale(0.88); /* さらにズームアウトして左右を広く表示 */
                 transform-origin: center center;
             }
             #main-inner {
@@ -247,7 +247,7 @@
             #header-video {
                 top: 90px;
                 height: calc(100% - 90px);
-                transform: scale(0.88); /* 小さい画面ではもう少しズームアウト */
+                transform: scale(0.84); /* 小さい画面ではもっと左右を表示 */
             }
             #main-inner {
                 transform: scale(0.8);

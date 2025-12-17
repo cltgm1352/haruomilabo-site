@@ -65,36 +65,41 @@
         #main-content {
             display: none;
             width: 100%;
-            min-height: 100%;
+            height: 100%;
             background-color: #fff;
             color: #000;
             text-align: center;
             box-sizing: border-box;
             overflow: hidden;
+            position: relative;
         }
         
-        /* ヘッダー：ロゴを中心に、ハンバーガーは右端に安全に配置 */
+        /* ヘッダー */
         header {
             width: 100%;
-            padding: 20px 60px 20px 20px; /* 右側にハンバーガー分の余白を確保 */
-            background-color: #fff;
+            padding: 20px 70px 20px 20px; /* 右側にハンバーガー分の余白 */
+            background-color: rgba(255, 255, 255, 0.9); /* 少し透明にして動画が見えるように（任意） */
+            backdrop-filter: blur(5px); /* 背景動画の上にぼかし効果（モダンブラウザ対応） */
             display: flex;
             justify-content: center;
             align-items: center;
-            position: relative;
-            border-bottom: 1px solid #eee;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 10;
+            border-bottom: 1px solid rgba(238, 238, 238, 0.8);
             box-sizing: border-box;
         }
         
         header .logo {
-            height: 60px; /* 中位サイズ */
-            max-width: 80%; /* ロゴが大きすぎてはみ出さないように制限 */
+            height: 80px; /* もう少し大きく */
+            max-width: 90%;
         }
         
-        /* ハンバーガーメニュー（開くボタン） */
+        /* ハンバーガーボタン */
         .hamburger {
             position: absolute;
-            right: 20px; /* 右端から20px内側に固定 */
+            right: 20px;
             top: 50%;
             transform: translateY(-50%);
             width: 40px;
@@ -115,6 +120,17 @@
             transition: 0.3s;
         }
         
+        /* ヘッダーの下にフルスクリーン動画 */
+        #header-video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* 画面全体を覆うように */
+            z-index: 1;
+        }
+        
         /* メニュー本体 */
         #nav-menu {
             position: fixed;
@@ -133,7 +149,6 @@
             right: 0;
         }
         
-        /* 閉じるボタン（×） */
         .close-btn {
             position: absolute;
             top: 20px;
@@ -141,8 +156,6 @@
             width: 40px;
             height: 40px;
             cursor: pointer;
-            font-size: 30px;
-            color: #fff;
         }
         
         .close-btn::before, .close-btn::after {
@@ -181,10 +194,12 @@
         }
         
         #main-inner {
+            position: relative;
+            z-index: 2;
             width: 100%;
             max-width: 1000px;
             margin: 0 auto;
-            padding: 60px 20px 40px;
+            padding: 120px 20px 40px; /* ヘッダー分の上余白 */
         }
         
         .fade-out {
@@ -194,11 +209,10 @@
         /* スマホ対応 */
         @media (max-width: 768px) {
             header {
-                padding: 15px 55px 15px 15px; /* 右余白を確保 */
+                padding: 15px 60px 15px 15px;
             }
             header .logo {
-                height: 50px;
-                max-width: 75%;
+                height: 65px;
             }
             .hamburger {
                 right: 15px;
@@ -206,23 +220,23 @@
             #main-inner {
                 transform: scale(0.9);
                 transform-origin: top center;
-                padding-top: 40px;
+                padding-top: 100px;
             }
         }
         
         @media (max-width: 480px) {
             header {
-                padding: 10px 50px 10px 10px;
+                padding: 10px 55px 10px 10px;
             }
             header .logo {
-                height: 45px;
-                max-width: 70%;
+                height: 55px;
             }
             .hamburger {
                 right: 10px;
             }
             #main-inner {
                 transform: scale(0.8);
+                padding-top: 90px;
             }
         }
     </style>
@@ -238,7 +252,12 @@
     
     <!-- メイン画面 -->
     <div id="main-content">
-        <!-- ヘッダー -->
+        <!-- 背景動画（ヘッダーの下・画面全体） -->
+        <video id="header-video" autoplay muted loop playsinline>
+            <source src="2nd_video_1.mp4" type="video/mp4">
+        </video>
+        
+        <!-- ヘッダー（動画の上に重ねる） -->
         <header>
             <img src="2ndANNIVERSARY-2.png" alt="HARUOMILABO 2nd ANNIVERSARY" class="logo">
             <div class="hamburger" onclick="toggleMenu()">
@@ -284,6 +303,8 @@
             setTimeout(() => {
                 loadingDiv.style.display = 'none';
                 mainContent.style.display = 'block';
+                // 背景動画を再生開始（ローディング後に確実に再生）
+                document.getElementById('header-video').play();
             }, 1000);
         }
         

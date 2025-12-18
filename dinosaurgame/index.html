@@ -176,6 +176,23 @@
       background: #0f0;
       color: #222;
     }
+
+    /* BGMボタン */
+    #bgmToggle {
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      z-index: 10001;
+      padding: 5px 10px;
+      font-family: 'Press Start 2P', monospace;
+      font-size: 12px;
+      background: #0f0;
+      color: #222;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      user-select: none;
+    }
   </style>
 </head>
 <body>
@@ -197,6 +214,10 @@
     <button id="retryBtn">もう一度プレイ</button>
     <button id="postScoreBtn">記録を投稿する</button>
   </div>
+
+  <!-- BGM -->
+  <button id="bgmToggle">BGM ON</button>
+  <audio id="bgm" src="maou_bgm_8bit28.mp3" loop></audio>
 
   <script>
     const loader = document.getElementById("loader");
@@ -228,10 +249,9 @@
       progress.style.width = loadProgress + "%";
     }, 100);
 
-    // ジャンプ設定（上昇・下降速度）
-    const jumpHeight = 120; // px
-    const jumpUpSpeed = 20; // px/frame
-    const jumpDownSpeed = 6;  // px/frame
+    const jumpHeight = 120; 
+    const jumpUpSpeed = 20; 
+    const jumpDownSpeed = 6;  
 
     function jump() {
       if (!gameRunning || isJumping) return;
@@ -333,7 +353,6 @@
       dino.style.bottom = "0px";
       dino.style.left = "5vw";
 
-      // サボテン基本速度（px/frame） = ゲーム幅 / 110
       baseSpeed = game.clientWidth / 110;
 
       startScore();
@@ -360,7 +379,6 @@
     };
 
     postScoreBtn.onclick = () => {
-      // GoogleフォームのURLに新規タブで遷移
       window.open(
         "https://docs.google.com/forms/d/e/1FAIpQLSd8obO5MvSYJ3T2XPBX9FqIHP9tZ62yJMA7h6zqr8OFCAaVtA/viewform?usp=dialog",
         "_blank"
@@ -381,6 +399,25 @@
     window.addEventListener("resize", () => {
       location.reload();
     });
+
+    // BGM制御
+    const bgm = document.getElementById("bgm");
+    const bgmToggle = document.getElementById("bgmToggle");
+
+    bgm.volume = 0.1;
+    bgm.play().catch(() => {});
+
+    let bgmOn = true;
+    bgmToggle.onclick = () => {
+      if (bgmOn) {
+        bgm.pause();
+        bgmToggle.textContent = "BGM OFF";
+      } else {
+        bgm.play();
+        bgmToggle.textContent = "BGM ON";
+      }
+      bgmOn = !bgmOn;
+    };
   </script>
 </body>
 </html>

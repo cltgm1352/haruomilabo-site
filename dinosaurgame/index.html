@@ -231,6 +231,10 @@
     const retryBtn = document.getElementById("retryBtn");
     const postScoreBtn = document.getElementById("postScoreBtn");
 
+    const bgm = document.getElementById("bgm");
+    const bgmToggle = document.getElementById("bgmToggle");
+    let bgmOn = true;
+
     let isJumping = false;
     let score = 0;
     let gameRunning = false;
@@ -279,7 +283,6 @@
     }
 
     let baseSpeed;
-
     function getCactusSpeed() {
       const maxMultiplier = 2;
       const speedMultiplier = 1 + Math.min(score / 1000, maxMultiplier - 1);
@@ -357,15 +360,21 @@
 
       startScore();
       createCactus();
+
+      // BGMを低音量で再生
+      if (!bgmOn) {
+        bgm.pause();
+      } else {
+        bgm.volume = 0.1;
+        bgm.play().catch(() => {});
+      }
     }
 
     function gameOver() {
       gameRunning = false;
       clearInterval(scoreInterval);
       clearTimeout(cactusTimeout);
-      document.querySelectorAll(".cactus").forEach(c => {
-        c.remove();
-      });
+      document.querySelectorAll(".cactus").forEach(c => c.remove());
       gameOverScreen.style.display = "flex";
     }
 
@@ -400,14 +409,7 @@
       location.reload();
     });
 
-    // BGM制御
-    const bgm = document.getElementById("bgm");
-    const bgmToggle = document.getElementById("bgmToggle");
-
-    bgm.volume = 0.1;
-    bgm.play().catch(() => {});
-
-    let bgmOn = true;
+    // BGMオンオフ
     bgmToggle.onclick = () => {
       if (bgmOn) {
         bgm.pause();

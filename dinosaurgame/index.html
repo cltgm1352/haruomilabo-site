@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <title>恐竜ゲーム</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+    body {
+      margin: 0;
+      background: #f0f0f0;
+      font-family: 'Press Start 2P', cursive, monospace;
+      overflow: hidden;
+      touch-action: manipulation;
+      user-select: none;
+    }
+
+    #loader {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: #222;
+      color: #0f0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      font-size: 18px;
+      z-index: 9999;
+    }
+
+    .progress-bar {
+      width: 80vw;
+      max-width: 300px;
+      height: 20px;
+      border: 2px solid #0f0;
+      margin: 15px 0;
+      border-radius: 5px;
+      overflow: hidden;
+    }
+    .progress {
+      background: #0f0;
+      height: 100%;
+      width: 0%;
+      transition: width 0.2s ease;
+    }
+
+    #startBtn {
+      background: #0f0;
+      border: none;
+      padding: 10px 20px;
+      font-family: inherit;
+      font-size: 16px;
+      cursor: pointer;
+      border-radius: 5px;
+      margin-top: 10px;
+      color: #222;
+      font-weight: bold;
+      display: none;
+    }
+
+    #score {
+      text-align: center;
+      font-size: 18px;
+      margin: 10px auto 0 auto;
+      user-select: none;
+      display: none;
+      max-width: 900px;
+      width: 90vw;
+    }
+
+    #game {
+      width: 90vw;
+      max-width: 900px;
+      height: 25vw;
+      max-height: 250px;
+      background: #fff;
+      border: 1px solid #333;
+      margin: 10px auto 20px auto;
+      position: relative;
+      overflow: hidden;
+      display: none;
+      border-radius: 8px;
+      touch-action: manipulation;
+    }
+
+    #dino {
+      width: 10vw;
+      max-width: 40px;
+      height: 10vw;
+      max-height: 40px;
+      background-image: url("https://static.wixstatic.com/media/3eb4b2_2fdf6fd9013d41a2b26cd4d9c7d37604~mv2.png");
+      background-size: cover;
+      position: absolute;
+      bottom: 0;
+      left: 5vw;
+      user-select: none;
+    }
+
+    .cactus {
+      position: absolute;
+      bottom: 0;
+      left: 100%;
+      user-select: none;
+      background-image: url("https://dotown.maeda-design-room.net/wp-content/uploads/2022/01/plant_cactus_01.png");
+      background-size: cover;
+    }
+    @media (max-width: 480px) {
+      .cactus {
+        width: 7vw;
+        max-width: 28px;
+        height: 7vw;
+        max-height: 28px;
+      }
+    }
+    @media (min-width: 481px) {
+      .cactus {
+        width: 10vw;
+        max-width: 40px;
+        height: 10vw;
+        max-height: 40px;
+      }
+    }
+
+    #gameOverScreen {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: #222;
+      color: #0f0;
+      font-family: 'Press Start 2P', monospace;
+      font-size: 40px;
+      text-align: center;
+      padding: 30px 40px;
+      border-radius: 10px;
+      box-shadow: 2px 2px 0 #080, 4px 4px 0 #040;
+      user-select: none;
+      display: none;
+      z-index: 10000;
+      max-width: 400px;
+      width: 90vw;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+    #gameOverScreen button {
+      margin-top: 20px;
+      background: #0f0;
+      border: none;
+      padding: 10px 15px;
+      font-family: 'Press Start 2P', monospace;
+      font-size: 14px;
+      color: #222;
+      cursor: pointer;
+      border-radius: 6px;
+      user-select: none;
+      font-weight: bold;
+      letter-spacing: 1.5px;
+    }
+    #postScoreBtn {
+      margin-top: 10px;
+      background: #0a0;
+      border: none;
+      padding: 10px 15px;
+      font-family: 'Press Start 2P', monospace;
+      font-size: 14px;
+      color: #d0ffd0;
+      cursor: pointer;
+      border-radius: 6px;
+      user-select: none;
+      font-weight: bold;
+      letter-spacing: 1.5px;
+    }
+    #postScoreBtn:hover {
+      background: #0f0;
+      color: #222;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="loader">
+    <div>Loading...</div>
+    <div class="progress-bar"><div class="progress"></div></div>
+    <button id="startBtn" disabled>ゲームを始める</button>
+  </div>
+
+  <div id="score">スコア: 0</div>
+
+  <div id="game">
+    <div id="dino"></div>
+  </div>
+
+  <div id="gameOverScreen" style="display:none; flex-direction: column;">
+    GAME OVER<br />
+    <button id="retryBtn">もう一度プレイ</button>
+    <button id="postScoreBtn">記録を投稿する</button>
+  </div>
+
+  <script>
+    const loader = document.getElementById("loader");
+    const progress = loader.querySelector(".progress");
+    const startBtn = document.getElementById("startBtn");
+
+    const scoreDisplay = document.getElementById("score");
+    const game = document.getElementById("game");
+    const dino = document.getElementById("dino");
+    const gameOverScreen = document.getElementById("gameOverScreen");
+    const retryBtn = document.getElementById("retryBtn");
+    const postScoreBtn = document.getElementById("postScoreBtn");
+
+    let isJumping = false;
+    let score = 0;
+    let gameRunning = false;
+    let scoreInterval;
+    let cactusTimeout;
+
+    let loadProgress = 0;
+    const loadInterval = setInterval(() => {
+      loadProgress += Math.random() * 10;
+      if (loadProgress >= 100) {
+        loadProgress = 100;
+        clearInterval(loadInterval);
+        startBtn.disabled = false;
+        startBtn.style.display = "block";
+      }
+      progress.style.width = loadProgress + "%";
+    }, 100);
+
+    // ジャンプ設定（上昇・下降速度）
+    const jumpHeight = 120; // px
+    const jumpUpSpeed = 20; // px/frame
+    const jumpDownSpeed = 6;  // px/frame
+
+    function jump() {
+      if (!gameRunning || isJumping) return;
+      isJumping = true;
+      let pos = 0;
+      const up = setInterval(() => {
+        if (pos >= jumpHeight) {
+          clearInterval(up);
+          const down = setInterval(() => {
+            if (pos <= 0) {
+              clearInterval(down);
+              isJumping = false;
+              dino.style.bottom = "0px";
+            } else {
+              pos -= jumpDownSpeed;
+              if (pos < 0) pos = 0;
+              dino.style.bottom = pos + "px";
+            }
+          }, 20);
+        } else {
+          pos += jumpUpSpeed;
+          dino.style.bottom = pos + "px";
+        }
+      }, 20);
+    }
+
+    let baseSpeed;
+
+    function getCactusSpeed() {
+      const maxMultiplier = 2;
+      const speedMultiplier = 1 + Math.min(score / 1000, maxMultiplier - 1);
+      return baseSpeed * speedMultiplier;
+    }
+
+    function createCactus() {
+      if (!gameRunning) return;
+
+      const cactus = document.createElement("div");
+      cactus.classList.add("cactus");
+      game.appendChild(cactus);
+
+      let cactusLeft = game.clientWidth;
+
+      const move = setInterval(() => {
+        if (!gameRunning) {
+          clearInterval(move);
+          cactus.remove();
+          return;
+        }
+
+        const speed = getCactusSpeed();
+        cactusLeft -= speed;
+        cactus.style.left = cactusLeft + "px";
+
+        const dinoBottom = parseInt(getComputedStyle(dino).bottom);
+        const dinoLeft = parseInt(getComputedStyle(dino).left);
+        const dinoWidth = dino.offsetWidth;
+        const cactusWidth = cactus.offsetWidth;
+
+        const collisionHeightThreshold = window.innerWidth <= 480 ? 25 : 40;
+        const collisionMargin = window.innerWidth <= 480 ? 3 : 0;
+
+        if (
+          cactusLeft + collisionMargin < dinoLeft + dinoWidth &&
+          cactusLeft - collisionMargin + cactusWidth > dinoLeft &&
+          dinoBottom < collisionHeightThreshold
+        ) {
+          clearInterval(move);
+          gameOver();
+        }
+
+        if (cactusLeft < -cactusWidth) {
+          clearInterval(move);
+          cactus.remove();
+        }
+      }, 20);
+
+      cactusTimeout = setTimeout(createCactus, Math.random() * 900 + 900);
+    }
+
+    function startScore() {
+      score = 0;
+      scoreDisplay.textContent = "スコア: 0";
+      scoreInterval = setInterval(() => {
+        if (!gameRunning) return;
+        score += 5;
+        scoreDisplay.textContent = "スコア: " + score;
+      }, 100);
+    }
+
+    function startGame() {
+      loader.style.display = "none";
+      scoreDisplay.style.display = "block";
+      game.style.display = "block";
+      gameOverScreen.style.display = "none";
+
+      gameRunning = true;
+
+      dino.style.bottom = "0px";
+      dino.style.left = "5vw";
+
+      // サボテン基本速度（px/frame） = ゲーム幅 / 110
+      baseSpeed = game.clientWidth / 110;
+
+      startScore();
+      createCactus();
+    }
+
+    function gameOver() {
+      gameRunning = false;
+      clearInterval(scoreInterval);
+      clearTimeout(cactusTimeout);
+      document.querySelectorAll(".cactus").forEach(c => {
+        c.remove();
+      });
+      gameOverScreen.style.display = "flex";
+    }
+
+    startBtn.onclick = () => {
+      startGame();
+    };
+
+    retryBtn.onclick = () => {
+      gameOverScreen.style.display = "none";
+      startGame();
+    };
+
+    postScoreBtn.onclick = () => {
+      // GoogleフォームのURLに新規タブで遷移
+      window.open(
+        "https://docs.google.com/forms/d/e/1FAIpQLSd8obO5MvSYJ3T2XPBX9FqIHP9tZ62yJMA7h6zqr8OFCAaVtA/viewform?usp=dialog",
+        "_blank"
+      );
+    };
+
+    document.addEventListener("keydown", e => {
+      if ((e.key === "ArrowUp" || e.key === " " || e.key === "Spacebar") && gameRunning) {
+        e.preventDefault();
+        jump();
+      }
+    });
+
+    game.addEventListener("touchstart", () => {
+      jump();
+    });
+
+    window.addEventListener("resize", () => {
+      location.reload();
+    });
+  </script>
+</body>
+</html>

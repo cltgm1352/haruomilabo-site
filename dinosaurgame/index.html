@@ -163,7 +163,10 @@ document.addEventListener("keydown",e=>{if(e.key===" "||e.key==="ArrowUp"){e.pre
 document.addEventListener("touchstart",e=>{if(!gameRunning)return; e.preventDefault(); jump();},{passive:false});
 
 bgmToggle.onclick=()=>{
-  bgmOn=!bgmOn; bgmToggle.textContent=bgmOn?"BGM ON":"BGM OFF"; bgmOn?bgm.play():bgm.pause();
+  bgmOn=!bgmOn;
+  bgm.volume = 0.1; // 低音量で再生
+  bgmToggle.textContent=bgmOn?"BGM ON":"BGM OFF";
+  bgmOn?bgm.play():bgm.pause();
 };
 </script>
 </body>

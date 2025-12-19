@@ -5,11 +5,10 @@
   <title>恐竜ゲーム</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
   <link rel="icon" href="Dinosaur.png" type="image/png">
-
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
 
-    /* ===== 選択・長押し完全無効 ===== */
+    /* ===== 追加：選択・長押し完全無効 ===== */
     * {
       -webkit-user-select: none;
       -moz-user-select: none;
@@ -17,19 +16,22 @@
       user-select: none;
       -webkit-touch-callout: none;
     }
-
     html, body {
+      overscroll-behavior: none;
+    }
+
+    body {
       margin: 0;
       background: #f0f0f0;
       font-family: 'Press Start 2P', cursive, monospace;
       overflow: hidden;
       touch-action: manipulation;
-      overscroll-behavior: none;
+      user-select: none;
     }
 
     #loader {
       position: fixed;
-      inset: 0;
+      top: 0; left: 0; right: 0; bottom: 0;
       background: #222;
       color: #0f0;
       display: flex;
@@ -49,7 +51,6 @@
       border-radius: 5px;
       overflow: hidden;
     }
-
     .progress {
       background: #0f0;
       height: 100%;
@@ -63,17 +64,21 @@
       padding: 10px 20px;
       font-family: inherit;
       font-size: 16px;
-      border-radius: 5px;
-      display: none;
       cursor: pointer;
+      border-radius: 5px;
+      margin-top: 10px;
+      color: #222;
       font-weight: bold;
+      display: none;
     }
 
     #score {
       text-align: center;
       font-size: 18px;
-      margin: 10px auto;
+      margin: 10px auto 0 auto;
       display: none;
+      max-width: 900px;
+      width: 90vw;
     }
 
     #game {
@@ -83,17 +88,21 @@
       max-height: 250px;
       background: #fff;
       border: 1px solid #333;
-      margin: auto;
+      margin: 10px auto 20px auto;
       position: relative;
       overflow: hidden;
       display: none;
       border-radius: 8px;
+      touch-action: manipulation;
     }
 
     #dino {
-      width: 40px;
-      height: 40px;
-      background: url("Dinosaur.png") no-repeat center / cover;
+      width: 10vw;
+      max-width: 40px;
+      height: 10vw;
+      max-height: 40px;
+      background-image: url("Dinosaur.png");
+      background-size: cover;
       position: absolute;
       bottom: 0;
       left: 5vw;
@@ -103,33 +112,71 @@
       position: absolute;
       bottom: 0;
       left: 100%;
-      background: url("saboten.png") no-repeat center / cover;
-      width: 40px;
-      height: 40px;
+      background-image: url("saboten.png");
+      background-size: cover;
+    }
+
+    @media (max-width: 480px) {
+      .cactus {
+        width: 7vw;
+        max-width: 28px;
+        height: 7vw;
+        max-height: 28px;
+      }
+    }
+    @media (min-width: 481px) {
+      .cactus {
+        width: 10vw;
+        max-width: 40px;
+        height: 10vw;
+        max-height: 40px;
+      }
     }
 
     #gameOverScreen {
       position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.8);
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: #222;
       color: #0f0;
+      font-size: 40px;
+      text-align: center;
+      padding: 30px 40px;
+      border-radius: 10px;
+      box-shadow: 2px 2px 0 #080, 4px 4px 0 #040;
       display: none;
+      z-index: 10000;
+      max-width: 400px;
+      width: 90vw;
+      flex-direction: column;
       justify-content: center;
       align-items: center;
-      flex-direction: column;
-      z-index: 10000;
     }
 
     #gameOverScreen button {
-      margin-top: 15px;
+      margin-top: 20px;
+      background: #0f0;
+      border: none;
       padding: 10px 15px;
       font-family: inherit;
       font-size: 14px;
-      border: none;
-      background: #0f0;
       color: #222;
-      border-radius: 6px;
       cursor: pointer;
+      border-radius: 6px;
+      font-weight: bold;
+    }
+
+    #postScoreBtn {
+      margin-top: 10px;
+      background: #0a0;
+      border: none;
+      padding: 10px 15px;
+      font-family: inherit;
+      font-size: 14px;
+      color: #d0ffd0;
+      cursor: pointer;
+      border-radius: 6px;
       font-weight: bold;
     }
 
@@ -137,14 +184,15 @@
       position: fixed;
       top: 10px;
       right: 10px;
+      z-index: 10001;
+      padding: 5px 10px;
+      font-family: inherit;
       font-size: 12px;
-      padding: 6px 10px;
       background: #0f0;
+      color: #222;
       border: none;
       border-radius: 5px;
-      z-index: 10001;
       cursor: pointer;
-      font-family: inherit;
     }
   </style>
 </head>
@@ -152,19 +200,21 @@
 <body>
 
   <div id="loader">
-    Loading...
+    <div>Loading...</div>
     <div class="progress-bar"><div class="progress"></div></div>
     <button id="startBtn" disabled>ゲームを始める</button>
   </div>
 
   <div id="score">スコア: 0</div>
+
   <div id="game">
     <div id="dino"></div>
   </div>
 
-  <div id="gameOverScreen">
-    GAME OVER
-    <button id="retryBtn">もう一度</button>
+  <div id="gameOverScreen" style="display:none; flex-direction: column;">
+    GAME OVER<br />
+    <button id="retryBtn">もう一度プレイ</button>
+    <button id="postScoreBtn">記録を投稿する</button>
   </div>
 
   <button id="bgmToggle">BGM ON</button>
@@ -172,86 +222,95 @@
 
   <script>
     const loader = document.getElementById("loader");
-    const progress = document.querySelector(".progress");
+    const progress = loader.querySelector(".progress");
     const startBtn = document.getElementById("startBtn");
     const scoreDisplay = document.getElementById("score");
     const game = document.getElementById("game");
     const dino = document.getElementById("dino");
     const gameOverScreen = document.getElementById("gameOverScreen");
     const retryBtn = document.getElementById("retryBtn");
+    const postScoreBtn = document.getElementById("postScoreBtn");
     const bgm = document.getElementById("bgm");
     const bgmToggle = document.getElementById("bgmToggle");
 
-    let load = 0;
-    let score = 0;
     let isJumping = false;
+    let score = 0;
     let gameRunning = false;
-    let cactusTimer;
-    let scoreTimer;
+    let scoreInterval;
+    let cactusTimeout;
+    let baseSpeed;
     let bgmOn = true;
 
-    const jumpHeight = 120;
-
-    const loadTimer = setInterval(() => {
-      load += Math.random() * 15;
-      if (load >= 100) {
-        load = 100;
-        clearInterval(loadTimer);
+    let loadProgress = 0;
+    const loadInterval = setInterval(() => {
+      loadProgress += Math.random() * 10;
+      if (loadProgress >= 100) {
+        loadProgress = 100;
+        clearInterval(loadInterval);
         startBtn.disabled = false;
         startBtn.style.display = "block";
       }
-      progress.style.width = load + "%";
+      progress.style.width = loadProgress + "%";
     }, 100);
 
     function jump() {
       if (!gameRunning || isJumping) return;
       isJumping = true;
-      let y = 0;
+      let pos = 0;
+
       const up = setInterval(() => {
-        y += 20;
-        dino.style.bottom = y + "px";
-        if (y >= jumpHeight) {
+        if (pos >= 120) {
           clearInterval(up);
           const down = setInterval(() => {
-            y -= 6;
-            if (y <= 0) {
-              y = 0;
-              isJumping = false;
+            if (pos <= 0) {
               clearInterval(down);
+              isJumping = false;
+              dino.style.bottom = "0px";
+            } else {
+              pos -= 6;
+              dino.style.bottom = pos + "px";
             }
-            dino.style.bottom = y + "px";
           }, 20);
+        } else {
+          pos += 20;
+          dino.style.bottom = pos + "px";
         }
       }, 20);
     }
 
+    function getCactusSpeed() {
+      return baseSpeed * (1 + Math.min(score / 1000, 1));
+    }
+
     function createCactus() {
       if (!gameRunning) return;
-      const c = document.createElement("div");
-      c.className = "cactus";
-      game.appendChild(c);
-      let x = game.clientWidth;
+      const cactus = document.createElement("div");
+      cactus.className = "cactus";
+      game.appendChild(cactus);
+      let left = game.clientWidth;
 
       const move = setInterval(() => {
         if (!gameRunning) {
           clearInterval(move);
-          c.remove();
+          cactus.remove();
           return;
         }
-        x -= 6;
-        c.style.left = x + "px";
+
+        left -= getCactusSpeed();
+        cactus.style.left = left + "px";
 
         const dinoBottom = parseInt(getComputedStyle(dino).bottom);
-        if (x < 80 && x > 20 && dinoBottom < 35) {
+        if (left < 80 && left > 20 && dinoBottom < 40) {
           gameOver();
         }
-        if (x < -40) {
+
+        if (left < -50) {
           clearInterval(move);
-          c.remove();
+          cactus.remove();
         }
       }, 20);
 
-      cactusTimer = setTimeout(createCactus, 1200);
+      cactusTimeout = setTimeout(createCactus, Math.random() * 900 + 900);
     }
 
     function startGame() {
@@ -259,12 +318,13 @@
       scoreDisplay.style.display = "block";
       game.style.display = "block";
       gameOverScreen.style.display = "none";
-
+      gameRunning = true;
       score = 0;
       scoreDisplay.textContent = "スコア: 0";
-      gameRunning = true;
+      baseSpeed = game.clientWidth / 110;
 
-      scoreTimer = setInterval(() => {
+      scoreInterval = setInterval(() => {
+        if (!gameRunning) return;
         score += 5;
         scoreDisplay.textContent = "スコア: " + score;
       }, 100);
@@ -279,14 +339,21 @@
 
     function gameOver() {
       gameRunning = false;
-      clearInterval(scoreTimer);
-      clearTimeout(cactusTimer);
+      clearInterval(scoreInterval);
+      clearTimeout(cactusTimeout);
       document.querySelectorAll(".cactus").forEach(c => c.remove());
       gameOverScreen.style.display = "flex";
     }
 
     startBtn.onclick = startGame;
     retryBtn.onclick = startGame;
+
+    postScoreBtn.onclick = () => {
+      window.open(
+        "https://docs.google.com/forms/d/e/1FAIpQLSd8obO5MvSYJ3T2XPBX9FqIHP9tZ62yJMA7h6zqr8OFCAaVtA/viewform?usp=dialog",
+        "_blank"
+      );
+    };
 
     document.addEventListener("keydown", e => {
       if (e.key === " " || e.key === "ArrowUp") {

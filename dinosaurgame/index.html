@@ -5,15 +5,16 @@
   <title>恐竜ゲーム</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
   <link rel="icon" href="Dinosaur.png" type="image/png">
+
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
 
+    /* ===== 選択・長押し無効 ===== */
     * {
       -webkit-user-select: none;
       user-select: none;
       -webkit-touch-callout: none;
     }
-
     html, body {
       overscroll-behavior: none;
     }
@@ -114,11 +115,21 @@
     }
 
     @media (max-width: 480px) {
+      /* ===== スマホではゲーム画面を大きく ===== */
+      #game {
+        width: 96vw;
+        height: 40vw;
+        max-height: none;
+      }
+
+      #dino {
+        width: 12vw;
+        height: 12vw;
+      }
+
       .cactus {
-        width: 7vw;
-        max-width: 28px;
-        height: 7vw;
-        max-height: 28px;
+        width: 10vw;
+        height: 10vw;
       }
     }
 
@@ -275,11 +286,9 @@ function getCactusSpeed() {
 
 function createCactus() {
   if (!gameRunning) return;
-
   const cactus = document.createElement("div");
   cactus.className = "cactus";
   game.appendChild(cactus);
-
   let x = game.clientWidth;
 
   const move = setInterval(() => {
@@ -292,13 +301,11 @@ function createCactus() {
     x -= getCactusSpeed();
     cactus.style.left = x + "px";
 
-    /* ===== 改良済み当たり判定（おすすめ） ===== */
     const dinoRect = dino.getBoundingClientRect();
     const cactusRect = cactus.getBoundingClientRect();
 
     const hitMarginX = 6;
     const hitMarginY = 6;
-
     const dinoFoot = dinoRect.bottom - hitMarginY;
     const cactusTop = cactusRect.top + cactusRect.height * 0.4;
 
@@ -310,7 +317,7 @@ function createCactus() {
       gameOver();
     }
 
-    if (x < -50) {
+    if (x < -60) {
       clearInterval(move);
       cactus.remove();
     }

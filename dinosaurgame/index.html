@@ -8,14 +8,12 @@
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
 
-    /* ===== 追加：選択・長押し完全無効 ===== */
     * {
       -webkit-user-select: none;
-      -moz-user-select: none;
-      -ms-user-select: none;
       user-select: none;
       -webkit-touch-callout: none;
     }
+
     html, body {
       overscroll-behavior: none;
     }
@@ -26,12 +24,11 @@
       font-family: 'Press Start 2P', cursive, monospace;
       overflow: hidden;
       touch-action: manipulation;
-      user-select: none;
     }
 
     #loader {
       position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
+      inset: 0;
       background: #222;
       color: #0f0;
       display: flex;
@@ -51,6 +48,7 @@
       border-radius: 5px;
       overflow: hidden;
     }
+
     .progress {
       background: #0f0;
       height: 100%;
@@ -75,7 +73,7 @@
     #score {
       text-align: center;
       font-size: 18px;
-      margin: 10px auto 0 auto;
+      margin: 10px auto 0;
       display: none;
       max-width: 900px;
       width: 90vw;
@@ -88,12 +86,11 @@
       max-height: 250px;
       background: #fff;
       border: 1px solid #333;
-      margin: 10px auto 20px auto;
+      margin: 10px auto 20px;
       position: relative;
       overflow: hidden;
       display: none;
       border-radius: 8px;
-      touch-action: manipulation;
     }
 
     #dino {
@@ -124,6 +121,7 @@
         max-height: 28px;
       }
     }
+
     @media (min-width: 481px) {
       .cactus {
         width: 10vw;
@@ -150,7 +148,6 @@
       max-width: 400px;
       width: 90vw;
       flex-direction: column;
-      justify-content: center;
       align-items: center;
     }
 
@@ -170,14 +167,7 @@
     #postScoreBtn {
       margin-top: 10px;
       background: #0a0;
-      border: none;
-      padding: 10px 15px;
-      font-family: inherit;
-      font-size: 14px;
       color: #d0ffd0;
-      cursor: pointer;
-      border-radius: 6px;
-      font-weight: bold;
     }
 
     #bgmToggle {
@@ -199,181 +189,199 @@
 
 <body>
 
-  <div id="loader">
-    <div>Loading...</div>
-    <div class="progress-bar"><div class="progress"></div></div>
-    <button id="startBtn" disabled>ゲームを始める</button>
-  </div>
+<div id="loader">
+  <div>Loading...</div>
+  <div class="progress-bar"><div class="progress"></div></div>
+  <button id="startBtn" disabled>ゲームを始める</button>
+</div>
 
-  <div id="score">スコア: 0</div>
+<div id="score">スコア: 0</div>
 
-  <div id="game">
-    <div id="dino"></div>
-  </div>
+<div id="game">
+  <div id="dino"></div>
+</div>
 
-  <div id="gameOverScreen" style="display:none; flex-direction: column;">
-    GAME OVER<br />
-    <button id="retryBtn">もう一度プレイ</button>
-    <button id="postScoreBtn">記録を投稿する</button>
-  </div>
+<div id="gameOverScreen" style="display:none; flex-direction: column;">
+  GAME OVER<br>
+  <button id="retryBtn">もう一度プレイ</button>
+  <button id="postScoreBtn">記録を投稿する</button>
+</div>
 
-  <button id="bgmToggle">BGM ON</button>
-  <audio id="bgm" src="maou_bgm_8bit28.mp3" loop></audio>
+<button id="bgmToggle">BGM ON</button>
+<audio id="bgm" src="maou_bgm_8bit28.mp3" loop></audio>
 
-  <script>
-    const loader = document.getElementById("loader");
-    const progress = loader.querySelector(".progress");
-    const startBtn = document.getElementById("startBtn");
-    const scoreDisplay = document.getElementById("score");
-    const game = document.getElementById("game");
-    const dino = document.getElementById("dino");
-    const gameOverScreen = document.getElementById("gameOverScreen");
-    const retryBtn = document.getElementById("retryBtn");
-    const postScoreBtn = document.getElementById("postScoreBtn");
-    const bgm = document.getElementById("bgm");
-    const bgmToggle = document.getElementById("bgmToggle");
+<script>
+const loader = document.getElementById("loader");
+const progress = loader.querySelector(".progress");
+const startBtn = document.getElementById("startBtn");
+const scoreDisplay = document.getElementById("score");
+const game = document.getElementById("game");
+const dino = document.getElementById("dino");
+const gameOverScreen = document.getElementById("gameOverScreen");
+const retryBtn = document.getElementById("retryBtn");
+const postScoreBtn = document.getElementById("postScoreBtn");
+const bgm = document.getElementById("bgm");
+const bgmToggle = document.getElementById("bgmToggle");
 
-    let isJumping = false;
-    let score = 0;
-    let gameRunning = false;
-    let scoreInterval;
-    let cactusTimeout;
-    let baseSpeed;
-    let bgmOn = true;
+let isJumping = false;
+let gameRunning = false;
+let score = 0;
+let scoreInterval;
+let cactusTimeout;
+let baseSpeed;
+let bgmOn = true;
 
-    let loadProgress = 0;
-    const loadInterval = setInterval(() => {
-      loadProgress += Math.random() * 10;
-      if (loadProgress >= 100) {
-        loadProgress = 100;
-        clearInterval(loadInterval);
-        startBtn.disabled = false;
-        startBtn.style.display = "block";
-      }
-      progress.style.width = loadProgress + "%";
-    }, 100);
+/* ロード演出 */
+let load = 0;
+const loadInterval = setInterval(() => {
+  load += Math.random() * 10;
+  if (load >= 100) {
+    load = 100;
+    clearInterval(loadInterval);
+    startBtn.disabled = false;
+    startBtn.style.display = "block";
+  }
+  progress.style.width = load + "%";
+}, 100);
 
-    function jump() {
-      if (!gameRunning || isJumping) return;
-      isJumping = true;
-      let pos = 0;
-
-      const up = setInterval(() => {
-        if (pos >= 120) {
-          clearInterval(up);
-          const down = setInterval(() => {
-            if (pos <= 0) {
-              clearInterval(down);
-              isJumping = false;
-              dino.style.bottom = "0px";
-            } else {
-              pos -= 6;
-              dino.style.bottom = pos + "px";
-            }
-          }, 20);
-        } else {
-          pos += 20;
-          dino.style.bottom = pos + "px";
+/* ジャンプ */
+function jump() {
+  if (!gameRunning || isJumping) return;
+  isJumping = true;
+  let y = 0;
+  const up = setInterval(() => {
+    if (y >= 120) {
+      clearInterval(up);
+      const down = setInterval(() => {
+        if (y <= 0) {
+          y = 0;
+          clearInterval(down);
+          isJumping = false;
         }
+        y -= 6;
+        dino.style.bottom = y + "px";
       }, 20);
+    } else {
+      y += 20;
+      dino.style.bottom = y + "px";
+    }
+  }, 20);
+}
+
+/* サボテン */
+function getCactusSpeed() {
+  return baseSpeed * (1 + Math.min(score / 1000, 1));
+}
+
+function createCactus() {
+  if (!gameRunning) return;
+
+  const cactus = document.createElement("div");
+  cactus.className = "cactus";
+  game.appendChild(cactus);
+
+  let x = game.clientWidth;
+
+  const move = setInterval(() => {
+    if (!gameRunning) {
+      clearInterval(move);
+      cactus.remove();
+      return;
     }
 
-    function getCactusSpeed() {
-      return baseSpeed * (1 + Math.min(score / 1000, 1));
+    x -= getCactusSpeed();
+    cactus.style.left = x + "px";
+
+    /* ===== 改良済み当たり判定（おすすめ） ===== */
+    const dinoRect = dino.getBoundingClientRect();
+    const cactusRect = cactus.getBoundingClientRect();
+
+    const hitMarginX = 6;
+    const hitMarginY = 6;
+
+    const dinoFoot = dinoRect.bottom - hitMarginY;
+    const cactusTop = cactusRect.top + cactusRect.height * 0.4;
+
+    if (
+      dinoRect.right - hitMarginX > cactusRect.left &&
+      dinoRect.left + hitMarginX < cactusRect.right &&
+      dinoFoot > cactusTop
+    ) {
+      gameOver();
     }
 
-    function createCactus() {
-      if (!gameRunning) return;
-      const cactus = document.createElement("div");
-      cactus.className = "cactus";
-      game.appendChild(cactus);
-      let left = game.clientWidth;
-
-      const move = setInterval(() => {
-        if (!gameRunning) {
-          clearInterval(move);
-          cactus.remove();
-          return;
-        }
-
-        left -= getCactusSpeed();
-        cactus.style.left = left + "px";
-
-        const dinoBottom = parseInt(getComputedStyle(dino).bottom);
-        if (left < 80 && left > 20 && dinoBottom < 40) {
-          gameOver();
-        }
-
-        if (left < -50) {
-          clearInterval(move);
-          cactus.remove();
-        }
-      }, 20);
-
-      cactusTimeout = setTimeout(createCactus, Math.random() * 900 + 900);
+    if (x < -50) {
+      clearInterval(move);
+      cactus.remove();
     }
+  }, 20);
 
-    function startGame() {
-      loader.style.display = "none";
-      scoreDisplay.style.display = "block";
-      game.style.display = "block";
-      gameOverScreen.style.display = "none";
-      gameRunning = true;
-      score = 0;
-      scoreDisplay.textContent = "スコア: 0";
-      baseSpeed = game.clientWidth / 110;
+  cactusTimeout = setTimeout(createCactus, Math.random() * 900 + 900);
+}
 
-      scoreInterval = setInterval(() => {
-        if (!gameRunning) return;
-        score += 5;
-        scoreDisplay.textContent = "スコア: " + score;
-      }, 100);
+/* ゲーム制御 */
+function startGame() {
+  loader.style.display = "none";
+  scoreDisplay.style.display = "block";
+  game.style.display = "block";
+  gameOverScreen.style.display = "none";
 
-      createCactus();
+  score = 0;
+  scoreDisplay.textContent = "スコア: 0";
+  gameRunning = true;
+  baseSpeed = game.clientWidth / 110;
 
-      if (bgmOn) {
-        bgm.volume = 0.1;
-        bgm.play().catch(()=>{});
-      }
-    }
+  scoreInterval = setInterval(() => {
+    score += 5;
+    scoreDisplay.textContent = "スコア: " + score;
+  }, 100);
 
-    function gameOver() {
-      gameRunning = false;
-      clearInterval(scoreInterval);
-      clearTimeout(cactusTimeout);
-      document.querySelectorAll(".cactus").forEach(c => c.remove());
-      gameOverScreen.style.display = "flex";
-    }
+  createCactus();
 
-    startBtn.onclick = startGame;
-    retryBtn.onclick = startGame;
+  if (bgmOn) {
+    bgm.volume = 0.1;
+    bgm.play().catch(()=>{});
+  }
+}
 
-    postScoreBtn.onclick = () => {
-      window.open(
-        "https://docs.google.com/forms/d/e/1FAIpQLSd8obO5MvSYJ3T2XPBX9FqIHP9tZ62yJMA7h6zqr8OFCAaVtA/viewform?usp=dialog",
-        "_blank"
-      );
-    };
+function gameOver() {
+  gameRunning = false;
+  clearInterval(scoreInterval);
+  clearTimeout(cactusTimeout);
+  document.querySelectorAll(".cactus").forEach(c => c.remove());
+  gameOverScreen.style.display = "flex";
+}
 
-    document.addEventListener("keydown", e => {
-      if (e.key === " " || e.key === "ArrowUp") {
-        e.preventDefault();
-        jump();
-      }
-    });
+/* イベント */
+startBtn.onclick = startGame;
+retryBtn.onclick = startGame;
 
-    /* ===== 画面全体タップでジャンプ ===== */
-    document.addEventListener("touchstart", e => {
-      if (!gameRunning) return;
-      e.preventDefault();
-      jump();
-    }, { passive: false });
+postScoreBtn.onclick = () => {
+  window.open(
+    "https://docs.google.com/forms/d/e/1FAIpQLSd8obO5MvSYJ3T2XPBX9FqIHP9tZ62yJMA7h6zqr8OFCAaVtA/viewform?usp=dialog",
+    "_blank"
+  );
+};
 
-    bgmToggle.onclick = () => {
-      bgmOn = !bgmOn;
-      bgmToggle.textContent = bgmOn ? "BGM ON" : "BGM OFF";
-      bgmOn ? bgm.play() : bgm.pause();
-    };
-  </script>
+document.addEventListener("keydown", e => {
+  if (e.key === " " || e.key === "ArrowUp") {
+    e.preventDefault();
+    jump();
+  }
+});
+
+document.addEventListener("touchstart", e => {
+  if (!gameRunning) return;
+  e.preventDefault();
+  jump();
+}, { passive: false });
+
+bgmToggle.onclick = () => {
+  bgmOn = !bgmOn;
+  bgmToggle.textContent = bgmOn ? "BGM ON" : "BGM OFF";
+  bgmOn ? bgm.play() : bgm.pause();
+};
+</script>
+
 </body>
 </html>

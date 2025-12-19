@@ -9,7 +9,7 @@
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
 
-    /* ===== 選択・長押し無効 ===== */
+    /* 選択・長押し無効 */
     * {
       -webkit-user-select: none;
       user-select: none;
@@ -114,8 +114,8 @@
       background-size: cover;
     }
 
+    /* スマホ用 */
     @media (max-width: 480px) {
-      /* ===== スマホではゲーム画面を大きく ===== */
       #game {
         width: 96vw;
         height: 40vw;
@@ -127,9 +127,10 @@
         height: 12vw;
       }
 
+      /* サボテンを少し小さく */
       .cactus {
-        width: 10vw;
-        height: 10vw;
+        width: 8vw;
+        height: 8vw;
       }
     }
 
